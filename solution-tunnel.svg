@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Подземное строительство: инъекционное закрепление массива и герметизация притока воды в тоннеле">
+  <style>
+    .ink   { fill: none; stroke: #1A1C1A; stroke-width: 2; }
+    .lbl   { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .1em; fill: #1A1C1A; font-size: 16px; }
+    .sub   { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .06em; fill: #8A8F88; font-size: 13px; }
+    .rock  { fill: #ECEEEA; }
+    .bore  { fill: #F5F6F3; }
+    .grout { stroke: #6E7F6A; fill: none; }
+
+    .ring  { stroke: #6E7F6A; stroke-width: 14; fill: none;
+             stroke-dasharray: 880; stroke-dashoffset: 880; animation: ring 2.4s ease-out .3s forwards; }
+    @keyframes ring { to { stroke-dashoffset: 0; } }
+
+    .drop  { animation: drip 2.2s ease-in infinite; }
+    @keyframes drip { 0%{opacity:0; transform:translateY(-6px);} 30%{opacity:.7;} 100%{opacity:0; transform:translateY(18px);} }
+
+    .inj   { stroke:#6E7F6A; stroke-width:4; fill:none; stroke-linecap:round;
+             stroke-dasharray: 3 12; animation: inj 1s linear infinite; }
+    @keyframes inj { to { stroke-dashoffset:-30; } }
+
+    @media (prefers-reduced-motion: reduce){
+      .ring{ animation:none; stroke-dashoffset:0; }
+      .drop{ animation:none; opacity:.5; }
+      .inj{ animation:none; stroke-dasharray:none; }
+    }
+  </style>
+
+  <!-- rock mass -->
+  <rect class="rock" x="40" y="60" width="720" height="500"/>
+  <line class="ink" x1="40" y1="60" x2="760" y2="60"/>
+
+  <!-- fractures feeding water -->
+  <path class="ink" stroke-width="1.2" d="M260 60 L300 160 L280 230"/>
+  <path class="ink" stroke-width="1.2" d="M540 60 L500 170 L520 240"/>
+
+  <!-- tunnel bore -->
+  <circle class="bore" cx="400" cy="330" r="150"/>
+  <circle class="ink" cx="400" cy="330" r="150"/>
+
+  <!-- injected sealing ring (drawn on load) -->
+  <circle class="ring" cx="400" cy="330" r="150"/>
+
+  <!-- injection lances from bore into surrounding rock -->
+  <path class="inj" d="M300 250 L250 200"/>
+  <path class="inj" style="animation-delay:.3s" d="M500 250 L550 200"/>
+  <path class="inj" style="animation-delay:.6s" d="M300 410 L250 460"/>
+
+  <!-- water drops (inflow, being stopped) -->
+  <g fill="#8A8F88">
+    <circle class="drop" cx="300" cy="225" r="4"/>
+    <circle class="drop" style="animation-delay:.5s" cx="520" cy="235" r="4"/>
+    <circle class="drop" style="animation-delay:1s" cx="285" cy="210" r="3"/>
+  </g>
+
+  <!-- labels -->
+  <text class="lbl" x="60" y="120">трещиноватый массив</text>
+  <text class="lbl" x="320" y="335" text-anchor="middle">выработка</text>
+  <text class="lbl" x="400" y="520" text-anchor="middle" fill="#6E7F6A">герметизирующее кольцо NanoCem</text>
+  <text class="sub" x="540" y="270">приток воды ✕</text>
+</svg>

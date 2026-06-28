@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Ремонтно-изоляционные работы: закачка смеси под давлением и отсечение водопритока в нефтяной скважине">
+  <style>
+    .ink   { fill: none; stroke: #1A1C1A; stroke-width: 2; }
+    .thin  { fill: none; stroke: #1A1C1A; stroke-width: 1.4; }
+    .lbl   { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .1em; fill: #1A1C1A; font-size: 16px; }
+    .sub   { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .06em; fill: #8A8F88; font-size: 13px; }
+    .rockf { fill: #ECEEEA; }
+    .water { fill: #C9D2CE; }
+    .oil   { fill: #DCDED9; }
+    .grout { fill: #6E7F6A; }
+
+    .flow  { stroke: #6E7F6A; stroke-width: 5; fill: none; stroke-linecap: round;
+             stroke-dasharray: 4 18; animation: flow 1.1s linear infinite; }
+    @keyframes flow { to { stroke-dashoffset: -44; } }
+
+    .grow  { transform-box: fill-box; transform-origin: center; animation: grow 2s ease-out .4s forwards; }
+    @keyframes grow { from { transform: scaleX(0); opacity: .2;} to { transform: scaleX(1); opacity: 1;} }
+
+    .block { animation: block 2.4s ease-in-out infinite; }
+    @keyframes block { 0%,100%{opacity:.25; transform:translateX(0);} 50%{opacity:.7; transform:translateX(6px);} }
+    .block-r { animation: block 2.4s ease-in-out infinite; }
+    @keyframes blockR { 0%,100%{opacity:.25;} 50%{opacity:.7;} }
+
+    @media (prefers-reduced-motion: reduce){
+      .flow{ animation:none; stroke-dasharray:none; }
+      .grow{ animation:none; transform:none; opacity:1; }
+      .block,.block-r{ animation:none; opacity:.45; }
+    }
+  </style>
+
+  <!-- surface -->
+  <line class="ink" x1="40" y1="80" x2="760" y2="80"/>
+  <rect x="360" y="56" width="80" height="24" class="thin" fill="#F5F6F3"/>
+  <text class="sub" x="450" y="73">устье</text>
+
+  <!-- rock mass -->
+  <rect class="rockf" x="120" y="80" width="560" height="480"/>
+  <!-- producing / watered interval -->
+  <rect class="water" x="120" y="360" width="560" height="110"/>
+
+  <!-- casing -->
+  <line class="ink" x1="378" y1="80" x2="378" y2="540"/>
+  <line class="ink" x1="422" y1="80" x2="422" y2="540"/>
+
+  <!-- injection flow down the bore -->
+  <path class="flow" d="M400 90 L400 410"/>
+
+  <!-- isolation grout filling the interval around the bore -->
+  <g class="grow">
+    <rect class="grout" x="200" y="368" width="178" height="94" rx="2"/>
+    <rect class="grout" x="422" y="368" width="178" height="94" rx="2"/>
+  </g>
+
+  <!-- water inflow arrows getting blocked at the grout edge -->
+  <g stroke="#8A8F88" stroke-width="2.4" fill="none" stroke-linecap="round">
+    <path class="block" d="M150 392 L196 392 M186 384 L196 392 L186 400"/>
+    <path class="block" style="animation-delay:.4s" d="M150 438 L196 438 M186 430 L196 438 L186 446"/>
+    <g transform="translate(800 0) scale(-1 1)">
+      <path class="block" d="M150 392 L196 392 M186 384 L196 392 L186 400"/>
+      <path class="block" style="animation-delay:.4s" d="M150 438 L196 438 M186 430 L196 438 L186 446"/>
+    </g>
+  </g>
+
+  <!-- labels -->
+  <text class="lbl" x="40" y="345">обводнённый интервал</text>
+  <text class="sub" x="610" y="345">приток воды ↘</text>
+  <text class="lbl" x="430" y="500" fill="#6E7F6A">экран NanoCem</text>
+  <text class="sub" x="430" y="520">отсекает воду под давлением</text>
+</svg>

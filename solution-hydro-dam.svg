@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Гидротехнические сооружения: инъекционная герметизация трещин и противофильтрационная завеса в теле плотины">
+  <style>
+    .ink   { fill: none; stroke: #1A1C1A; stroke-width: 2; }
+    .lbl   { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .1em; fill: #1A1C1A; font-size: 16px; }
+    .sub   { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .06em; fill: #8A8F88; font-size: 13px; }
+    .dam   { fill: #ECEEEA; }
+    .rock  { fill: #DCDED9; }
+    .res   { fill: #C9D2CE; }
+    .grout { stroke: #6E7F6A; stroke-width: 6; stroke-linecap: round; fill: none; }
+
+    .curtain { stroke-dasharray: 200; stroke-dashoffset: 200; animation: draw 2.4s ease-out .3s forwards; }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+
+    .seep  { stroke: #8A8F88; stroke-width: 2.2; fill: none; stroke-linecap: round;
+             stroke-dasharray: 3 10; animation: seep 1.4s linear infinite; opacity:.5;}
+    @keyframes seep { to { stroke-dashoffset: -26; } }
+
+    .wave  { animation: wave 3s ease-in-out infinite; }
+    @keyframes wave { 0%,100%{opacity:.6;} 50%{opacity:1;} }
+
+    @media (prefers-reduced-motion: reduce){
+      .curtain{ animation:none; stroke-dashoffset:0; }
+      .seep{ animation:none; stroke-dasharray:none; opacity:.4;}
+      .wave{ animation:none; }
+    }
+  </style>
+
+  <!-- foundation rock -->
+  <rect class="rock" x="40" y="430" width="720" height="130"/>
+  <line class="ink" x1="40" y1="430" x2="760" y2="430"/>
+
+  <!-- reservoir water (left) -->
+  <rect class="res wave" x="40" y="250" width="300" height="180"/>
+  <line class="ink" x1="40" y1="250" x2="340" y2="250"/>
+
+  <!-- dam body (trapezoid) -->
+  <polygon class="dam" points="340,250 470,250 540,430 300,430"/>
+  <polygon class="ink" points="340,250 470,250 540,430 300,430"/>
+
+  <!-- crest -->
+  <line class="ink" x1="340" y1="250" x2="470" y2="250"/>
+
+  <!-- cracks in foundation -->
+  <path class="ink" stroke-width="1.2" d="M420 430 L440 470 L425 500 L450 540" />
+  <path class="ink" stroke-width="1.2" d="M480 430 L500 475 L488 520" />
+
+  <!-- grout curtain (injected, drawn on load) -->
+  <path class="grout curtain" d="M430 250 L455 430 L470 540"/>
+
+  <!-- injection collars on crest -->
+  <circle cx="430" cy="250" r="5" fill="#6E7F6A"/>
+  <circle cx="450" cy="250" r="5" fill="#6E7F6A"/>
+
+  <!-- seepage paths on downstream side (reduced) -->
+  <path class="seep" d="M560 470 L640 480"/>
+  <path class="seep" style="animation-delay:.5s" d="M560 510 L630 525"/>
+
+  <!-- labels -->
+  <text class="lbl" x="60" y="300" fill="#1A1C1A">верхний бьеф</text>
+  <text class="lbl" x="360" y="180">тело плотины</text>
+  <text class="lbl" x="500" y="600" fill="#6E7F6A">противофильтрационная завеса</text>
+  <text class="sub" x="600" y="465">остаточная фильтрация ↓</text>
+  <text class="sub" x="360" y="520">трещины основания</text>
+</svg>

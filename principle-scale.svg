@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" width="800" height="420" role="img" aria-label="Сравнение размера частиц: обычный цемент образует пробку, ультрадисперсная смесь проходит сквозь трещину">
+  <style>
+    .lbl  { font-family:'JetBrains Mono',ui-monospace,monospace; letter-spacing:.1em; fill:#1A1C1A; font-size:16px; }
+    .sub  { font-family:'JetBrains Mono',ui-monospace,monospace; letter-spacing:.05em; fill:#8A8F88; font-size:13px; }
+    .rock { fill:#ECEEEA; stroke:#1A1C1A; stroke-width:2; }
+    .nudgeBig { animation: nudge 2.6s ease-in-out infinite; }
+    @keyframes nudge { 0%,100%{transform:translateX(0);} 50%{transform:translateX(-8px);} }
+    .pass { animation: pass 2.4s linear infinite; }
+    @keyframes pass { 0%{transform:translateX(-60px); opacity:0;} 15%{opacity:1;} 85%{opacity:1;} 100%{transform:translateX(120px); opacity:0;} }
+    @media (prefers-reduced-motion: reduce){ .nudgeBig,.pass{ animation:none; opacity:1; } }
+  </style>
+
+  <!-- LEFT: ordinary cement -->
+  <text class="lbl" x="40" y="44">ОБЫЧНЫЙ ЦЕМЕНТ</text>
+  <text class="sub" x="40" y="66">~40–80 мкм</text>
+  <rect class="rock" x="40" y="110" width="150" height="240"/>
+  <rect class="rock" x="250" y="110" width="150" height="240"/>
+  <!-- fissure gap 190..250, big particles can't enter -->
+  <g class="nudgeBig" fill="#8A8F88">
+    <circle cx="178" cy="200" r="26"/>
+    <circle cx="172" cy="252" r="24"/>
+    <circle cx="180" cy="300" r="22"/>
+  </g>
+  <text class="sub" x="120" y="378" text-anchor="middle" fill="#1A1C1A">пробка на устье</text>
+
+  <!-- RIGHT: NanoCem -->
+  <text class="lbl" x="430" y="44" fill="#1A1C1A">NanoCem UT-9</text>
+  <text class="sub" x="430" y="66" fill="#6E7F6A">D95 ≤ 9 мкм</text>
+  <rect class="rock" x="430" y="110" width="150" height="240"/>
+  <rect class="rock" x="640" y="110" width="120" height="240"/>
+  <!-- fissure gap 580..640 -->
+  <rect x="600" y="110" width="20" height="240" fill="#6E7F6A" opacity=".35"/>
+  <g fill="#6E7F6A">
+    <circle class="pass" cx="610" cy="180" r="4"/>
+    <circle class="pass" style="animation-delay:.3s" cx="610" cy="210" r="4"/>
+    <circle class="pass" style="animation-delay:.6s" cx="610" cy="240" r="4"/>
+    <circle class="pass" style="animation-delay:.9s" cx="610" cy="270" r="4"/>
+    <circle class="pass" style="animation-delay:1.2s" cx="610" cy="300" r="4"/>
+  </g>
+  <text class="sub" x="610" y="378" text-anchor="middle" fill="#6E7F6A">сквозное проникновение</text>
+</svg>

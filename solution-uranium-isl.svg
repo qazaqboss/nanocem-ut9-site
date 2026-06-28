@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Уранодобыча ПСВ: разделение горизонтов и ликвидация перетока между продуктивным и водоносным пластами">
+  <style>
+    .ink   { fill: none; stroke: #1A1C1A; stroke-width: 2; }
+    .lbl   { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .1em; fill: #1A1C1A; font-size: 16px; }
+    .sub   { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .06em; fill: #8A8F88; font-size: 13px; }
+    .aqf   { fill: #C9D2CE; }
+    .prod  { fill: #DCDED9; }
+    .aquit { fill: #ECEEEA; }
+    .grout { fill: #6E7F6A; }
+
+    .seal { transform-box: fill-box; transform-origin: center; animation: seal 1.8s ease-out .4s forwards; }
+    @keyframes seal { from{ transform: scaleY(0); } to{ transform: scaleY(1);} }
+
+    .cross { stroke: #8A8F88; stroke-width: 2.6; fill:none; stroke-linecap:round;
+             stroke-dasharray: 4 8; animation: cross 1.3s linear infinite; }
+    @keyframes cross { to { stroke-dashoffset: -24; } }
+    .crossfade { animation: fade 2.4s ease-in-out infinite; }
+    @keyframes fade { 0%,100%{opacity:.15;} 50%{opacity:.55;} }
+
+    @media (prefers-reduced-motion: reduce){
+      .seal{ animation:none; transform:none; }
+      .cross{ animation:none; stroke-dasharray:none; }
+      .crossfade{ animation:none; opacity:.3; }
+    }
+  </style>
+
+  <!-- horizons -->
+  <rect class="aquit" x="40" y="80"  width="720" height="120"/> <!-- overburden -->
+  <rect class="aqf"   x="40" y="200" width="720" height="110"/> <!-- aquifer (water) -->
+  <rect class="aquit" x="40" y="310" width="720" height="50"/>  <!-- aquitard -->
+  <rect class="prod"  x="40" y="360" width="720" height="140"/> <!-- productive (uranium) -->
+  <rect class="aquit" x="40" y="500" width="720" height="60"/>
+
+  <line class="ink" x1="40" y1="200" x2="760" y2="200"/>
+  <line class="ink" x1="40" y1="310" x2="760" y2="310"/>
+  <line class="ink" x1="40" y1="360" x2="760" y2="360"/>
+  <line class="ink" x1="40" y1="500" x2="760" y2="500"/>
+
+  <!-- technological well -->
+  <line class="ink" x1="388" y1="80" x2="388" y2="500"/>
+  <line class="ink" x1="412" y1="80" x2="412" y2="500"/>
+
+  <!-- crossflow between aquifer and productive (the problem) -->
+  <g class="crossfade">
+    <path class="cross" d="M340 255 C 360 310, 360 330, 388 360"/>
+    <path class="cross" d="M460 255 C 440 310, 440 330, 412 360" transform=""/>
+  </g>
+
+  <!-- NanoCem seal across the aquitard interval (the solution) -->
+  <rect class="grout seal" x="300" y="305" width="200" height="60" rx="2"/>
+
+  <!-- labels -->
+  <text class="lbl" x="60" y="155">покровные отложения</text>
+  <text class="lbl" x="60" y="262" fill="#1A1C1A">водоносный горизонт</text>
+  <text class="lbl" x="60" y="440">продуктивный пласт (U)</text>
+  <text class="lbl" x="520" y="345" fill="#6E7F6A">отсечка перетока</text>
+  <text class="sub crossfade" x="470" y="290">переток ✕</text>
+</svg>

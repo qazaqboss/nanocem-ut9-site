@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="1200" height="640" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Обычный цемент образует пробку на устье трещины, NanoCem UT-9 проникает сквозь неё">
+  <style>
+    :root{}
+    .rock      { fill: none; stroke: #3A3D39; stroke-width: 1.5; }
+    .rockfill  { fill: #232622; }
+    .lbl       { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .14em; fill: #B9BDB6; font-size: 17px; }
+    .cap       { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .08em; fill: #8A8F88; font-size: 15px; }
+    .big       { fill: #8A8F88; }
+    .small     { fill: #6E7F6A; }
+    .divider   { stroke: #3A3D39; stroke-width: 1; }
+
+    /* big particles fall and pile at the fissure mouth (cannot enter) */
+    .fall-big  { animation: fallBig 2.6s ease-in infinite; }
+    @keyframes fallBig {
+      0%   { transform: translateY(-220px); opacity: 0; }
+      18%  { opacity: 1; }
+      72%  { transform: translateY(0); opacity: 1; }
+      86%  { transform: translateY(0); opacity: 0; }
+      100% { transform: translateY(0); opacity: 0; }
+    }
+
+    /* small particles stream through the fissure continuously */
+    .fall-small { animation: fallSmall 2.2s linear infinite; }
+    @keyframes fallSmall {
+      0%   { transform: translateY(-240px); opacity: 0; }
+      10%  { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { transform: translateY(260px); opacity: 0; }
+    }
+
+    /* fissure fills with NanoCem once, then holds */
+    .fill-grow {
+      transform-box: fill-box; transform-origin: top center;
+      animation: grow 2.6s ease-out 0.3s forwards;
+    }
+    @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fall-big, .fall-small { animation: none; opacity: 1; }
+      .fill-grow { animation: none; transform: none; }
+    }
+  </style>
+
+  <!-- ===================== PANEL A : ordinary cement ===================== -->
+  <text class="lbl" x="60" y="56">ОБЫЧНЫЙ ЦЕМЕНТ</text>
+
+  <!-- rock mass with a narrow vertical fissure at x=310 -->
+  <g>
+    <rect class="rockfill" x="60" y="300" width="240" height="300"/>
+    <rect class="rockfill" x="320" y="300" width="220" height="300"/>
+    <rect class="rock" x="60" y="300" width="240" height="300"/>
+    <rect class="rock" x="320" y="300" width="220" height="300"/>
+    <!-- fissure gap is between x=300 and x=320 (empty / dark = stays unfilled) -->
+  </g>
+
+  <!-- plug cluster already formed at the mouth (static) -->
+  <g class="big">
+    <circle cx="296" cy="292" r="17"/>
+    <circle cx="324" cy="292" r="16"/>
+    <circle cx="310" cy="278" r="18"/>
+    <circle cx="284" cy="276" r="14"/>
+    <circle cx="336" cy="278" r="14"/>
+    <circle cx="310" cy="258" r="16"/>
+  </g>
+
+  <!-- falling big particles that keep arriving and pile (never enter) -->
+  <g class="big">
+    <circle class="fall-big" style="animation-delay:0s"    cx="310" cy="250" r="16"/>
+    <circle class="fall-big" style="animation-delay:.5s"   cx="288" cy="250" r="14"/>
+    <circle class="fall-big" style="animation-delay:1.0s"  cx="332" cy="250" r="15"/>
+    <circle class="fall-big" style="animation-delay:1.5s"  cx="300" cy="250" r="13"/>
+    <circle class="fall-big" style="animation-delay:2.0s"  cx="320" cy="250" r="14"/>
+  </g>
+
+  <text class="cap" x="60" y="630">Частицы крупнее устья — пробка, трещина не заполнена</text>
+
+  <!-- divider -->
+  <line class="divider" x1="600" y1="40" x2="600" y2="600"/>
+
+  <!-- ===================== PANEL B : NanoCem UT-9 ===================== -->
+  <text class="lbl" x="660" y="56" fill="#9AAE93">NanoCem UT-9</text>
+
+  <g>
+    <rect class="rockfill" x="660" y="300" width="220" height="300"/>
+    <rect class="rockfill" x="900" y="300" width="240" height="300"/>
+    <rect class="rock" x="660" y="300" width="220" height="300"/>
+    <rect class="rock" x="900" y="300" width="240" height="300"/>
+  </g>
+
+  <!-- fissure (x 880..900) fills with NanoCem on load -->
+  <rect class="fill-grow" x="881" y="300" width="18" height="300" fill="#6E7F6A"/>
+
+  <!-- small particles stream down through the fissure -->
+  <g class="small">
+    <circle class="fall-small" style="animation-delay:0s"    cx="890" cy="280" r="3.4"/>
+    <circle class="fall-small" style="animation-delay:.18s"  cx="885" cy="280" r="3"/>
+    <circle class="fall-small" style="animation-delay:.36s"  cx="894" cy="280" r="3.2"/>
+    <circle class="fall-small" style="animation-delay:.55s"  cx="888" cy="280" r="2.8"/>
+    <circle class="fall-small" style="animation-delay:.73s"  cx="892" cy="280" r="3.4"/>
+    <circle class="fall-small" style="animation-delay:.92s"  cx="886" cy="280" r="3"/>
+    <circle class="fall-small" style="animation-delay:1.1s"  cx="890" cy="280" r="3.2"/>
+    <circle class="fall-small" style="animation-delay:1.3s"  cx="894" cy="280" r="2.8"/>
+    <circle class="fall-small" style="animation-delay:1.5s"  cx="887" cy="280" r="3.4"/>
+    <circle class="fall-small" style="animation-delay:1.7s"  cx="891" cy="280" r="3"/>
+    <circle class="fall-small" style="animation-delay:1.9s"  cx="889" cy="280" r="3.2"/>
+  </g>
+
+  <text class="cap" x="660" y="630" fill="#9AAE93">D95 ≤ 9 мкм — сквозное проникновение, сплошной экран</text>
+</svg>
