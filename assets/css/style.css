@@ -35,6 +35,8 @@ body {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: rgba(110,127,106,.18);
 }
 
 img, svg, canvas { display: block; max-width: 100%; }
@@ -123,7 +125,8 @@ p { margin: 0 0 1.1em; }
   border-bottom: 1px solid transparent;
 }
 .nav__inner {
-  max-width: var(--max); margin: 0 auto; padding: 0.9rem var(--pad);
+  max-width: var(--max); margin: 0 auto;
+  padding: 0.9rem max(var(--pad), env(safe-area-inset-right)) 0.9rem max(var(--pad), env(safe-area-inset-left));
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
 }
 .nav.scrolled {
@@ -442,10 +445,44 @@ input[type="range"]::-moz-range-thumb {
   .case__stats { width: 100%; justify-content: flex-start; gap: 2rem; }
   .stat { align-items: flex-start; }
   .reqs > div { grid-template-columns: 1fr; gap: 0.2rem; }
+
+  /* --- Hero под телефон: подпись в потоке, без перекрытия --- */
+  .hero {
+    min-height: 100svh;
+    padding: 5.5rem var(--pad) 2.4rem;
+    justify-content: center;
+  }
+  .hero__sub { max-width: none; }
+  .hero__cta { flex-direction: column; align-items: stretch; gap: 0.7rem; }
+  .hero__cta .btn { justify-content: center; width: 100%; }
+  .hero__readouts { gap: 0.7rem 1.4rem; }
+  .hero__caption {
+    position: static; transform: none; text-align: left;
+    width: auto; max-width: none; padding-inline: 0;
+    margin-top: 2.2rem;
+  }
+
+  /* --- Тап-зоны и плотность --- */
+  .sol__head { grid-template-columns: auto 1fr auto; gap: 0.8rem; }
+  .sol__visual { max-width: none; }
+  #scaleCanvas { height: 180px; }
+  .caseCanvas { height: 120px; }
+
+  /* --- Контакты / футер стек --- */
+  .contacts__cta .btn { width: 100%; justify-content: center; }
+  .footer__inner { flex-direction: column; align-items: flex-start; gap: 1.6rem; }
+  .footer__links { gap: 0.8rem 1.2rem; }
+}
+
+@media (max-width: 480px) {
+  .case__stats { gap: 1.4rem; }
+  .stat .num { font-size: 1.25rem; }
+  .hero__title { word-break: break-word; }
 }
 
 @media (max-width: 360px) {
   :root { --pad: 16px; }
+  .hero__readouts { flex-direction: column; gap: 0.6rem; }
 }
 
 /* ===========================================================
