@@ -336,6 +336,72 @@ input[type="range"]::-moz-range-thumb {
   100% { opacity: .9; stroke-dasharray: 4 8; stroke-dashoffset: 0; }
 }
 
+/* ---------- Нефтедобыча: интро-схема ---------- */
+.oil__intro {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 4rem); align-items: center; margin-bottom: clamp(2.6rem, 5vw, 4rem);
+}
+.oil__scheme { border: 1px solid var(--line); background: var(--paper-2); padding: 1.2rem; }
+.oil__scheme svg { width: 100%; height: auto; }
+
+/* элементы разреза */
+.oil__scheme .rock { fill: var(--paper); stroke: var(--line); stroke-width: 1; }
+.oil__scheme .surface { stroke: var(--ink); stroke-width: 1.4; }
+.oil__scheme .casing { fill: var(--paper-2); stroke: var(--ink); stroke-width: 1.4; }
+.oil__scheme .bore { fill: #fff; }
+.oil__scheme .tubing { fill: var(--paper-2); stroke: var(--ink); stroke-width: 1; }
+.oil__scheme .packer { fill: var(--ink); }
+.oil__scheme .oil-zone { fill: rgba(26,28,26,.07); }
+.oil__scheme .water-zone { fill: rgba(110,127,106,.10); }
+.oil__scheme .perf line { stroke: var(--ink); stroke-width: 1.6; }
+.oil__scheme .flow path { fill: none; stroke-width: 2; opacity: 0; }
+.oil__scheme .water-flow path { stroke: var(--muted); }
+.oil__scheme .oil-flow path { stroke: var(--ink); }
+.oil__scheme .inject-flow path { stroke: var(--accent); stroke-width: 2.4; }
+.oil__scheme .fill-zone { fill: var(--accent); opacity: 0; }
+
+.oil__scheme.in .fill-zone { animation: fillIn .9s var(--ease) .45s forwards; }
+.oil__scheme.in .flow path { animation: flowDash 1.5s linear .15s forwards; }
+
+.legend { list-style: none; margin: 1.2rem 0 0; padding: 0; display: grid; gap: 0.55rem; }
+.legend li {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-family: var(--f-mono); font-size: 0.76rem; color: var(--muted); line-height: 1.3;
+}
+.sw { width: 14px; height: 10px; flex: none; display: block; }
+.sw--acc { background: var(--accent); opacity: .55; }
+.sw--oil { background: rgba(26,28,26,.20); }
+.sw--line { background: none; border: 1.5px solid var(--ink); }
+
+/* список преимуществ */
+.ticks { list-style: none; margin: 1.4rem 0 0; padding: 0; display: grid; gap: 0.7rem; }
+.ticks li { position: relative; padding-left: 1.7rem; }
+.ticks li::before {
+  content: ""; position: absolute; left: 0; top: 0.55em;
+  width: 9px; height: 9px; border: 1.5px solid var(--accent); transform: rotate(45deg);
+}
+
+/* подзаголовок внутри секции */
+.sub-h {
+  font-family: var(--f-mono); font-weight: 500; font-size: 0.8125rem;
+  text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink);
+  margin: clamp(2.4rem, 5vw, 3.4rem) 0 1.4rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.sub-h::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.solutions + .sub-h { margin-top: clamp(2.6rem, 5vw, 3.6rem); }
+
+/* этапы работ */
+.steps { list-style: none; margin: 0 0 2.4rem; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.step { background: var(--paper); padding: 1.4rem; display: flex; gap: 1rem; align-items: flex-start; }
+.section--alt .step { background: var(--paper-2); }
+.step__n { font-family: var(--f-mono); font-size: 0.8rem; color: var(--accent); flex: none; padding-top: 0.15em; }
+.step h4 { font-family: var(--f-display); font-weight: 500; font-size: 1.0625rem; margin: 0 0 0.4em; }
+.step p { margin: 0; font-size: 0.95rem; color: var(--ink); }
+
+/* текстовая панель решения (без визуала) */
+.sol__panel-inner--text { grid-template-columns: 1fr; }
+
 /* ---------- Характеристики ---------- */
 .specs__grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
 .spec-table { width: 100%; border-collapse: collapse; }
@@ -415,6 +481,9 @@ input[type="range"]::-moz-range-thumb {
   .calc { position: static; }
   .sol__panel-inner { grid-template-columns: 1fr; }
   .sol__visual { margin: 0; max-width: 360px; }
+  .oil__intro { grid-template-columns: 1fr; }
+  .oil__scheme { max-width: 460px; }
+  .steps { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 767px) {
@@ -469,6 +538,8 @@ input[type="range"]::-moz-range-thumb {
   .caseCanvas { height: 120px; }
 
   /* --- Контакты / футер стек --- */
+  .steps { grid-template-columns: 1fr; }
+  .oil__scheme { max-width: none; }
   .contacts__cta .btn { width: 100%; justify-content: center; }
   .footer__inner { flex-direction: column; align-items: flex-start; gap: 1.6rem; }
   .footer__links { gap: 0.8rem 1.2rem; }
@@ -496,4 +567,6 @@ input[type="range"]::-moz-range-thumb {
   .sol.open .sol__visual .grout-ring { opacity: .6; animation: none; }
   .sol.open .sol__visual .flow path { opacity: .9; stroke-dasharray: 4 8; stroke-dashoffset: 0; animation: none; }
   .sol__panel { transition: none; }
+  .oil__scheme .fill-zone { opacity: .55; animation: none; }
+  .oil__scheme .flow path { opacity: .9; stroke-dasharray: 4 8; stroke-dashoffset: 0; animation: none; }
 }
