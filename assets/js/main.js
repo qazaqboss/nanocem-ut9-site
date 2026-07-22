@@ -110,27 +110,28 @@
   }
 
   /* ---------- Графики кейсов (Canvas) ---------- */
-  // Фактические замеры: oil — дебит нефти, т/сут; water — обводнённость, %
-  // oilMax задаёт верх шкалы по нефти для конкретной скважины.
+  // Среднемесячные показатели за 01.2026–07.2026 по рабочим суткам.
+  // oil — дебит нефти, т/сут; water — обводнённость, %; null — ремонт/простой.
+  var MONTHS = ['01', '02', '03', '04', '05', '06', '07'];
   var SERIES = {
-    'X-1': { oilMax: 16,
-      oil:   [2.73, 11.11, 14.16, 15.18, 10.25, 9.85, 10.67, 11.12],
-      water: [86.0, 43.0,  28.0,  24.8,  32.2,  38.4, 37.7,  37.0] },
+    'X-1': { oilMax: 18,
+      oil:   [16.22, 11.99, 0.16, 0.58, null, 11.81, 10.41],
+      water: [41.4,  49.4,  34.2, 94.8, null, 38.2,  36.8] },
     'X-2': { oilMax: 12,
-      oil:   [5.71, 7.73, 8.32, 8.19, 8.32, 8.97, 9.41, 10.34, 10.68],
-      water: [54.3, 27.5, 30.0, 29.0, 28.4, 28.7, 31.0, 30.8,  29.8] },
-    'X-3': { oilMax: 16,
-      oil:   [14.36, 14.32, 13.94, 13.67, 13.29, 13.63, 13.76, 13.54, 13.86, 13.66],
-      water: [34.8,  36.0,  34.1,  34.0,  33.6,  32.5,  36.5,  36.5,  35.8,  35.4] },
+      oil:   [3.26, 3.87, 2.50, 1.98, 1.20, 8.08, 9.76],
+      water: [75.6, 73.4, 79.3, 84.6, 88.4, 30.7, 30.1] },
+    'X-3': { oilMax: 18,
+      oil:   [2.71, 8.76, 14.89, 14.72, 14.22, 14.00, 13.70],
+      water: [85.2, 54.0, 32.4,  37.5,  36.0,  34.4,  35.8] },
     'X-4': { oilMax: 4,
-      oil:   [2.64, 2.20, 1.96, 2.39, 2.52, 2.52, 2.40, 1.91, 2.27],
-      water: [33.0, 28.0, 30.0, 22.0, 20.0, 19.9, 19.4, 19.1, 18.7] },
-    'X-5': { oilMax: 4,
-      oil:   [2.58, 2.98, 1.86, 2.01, 2.20, 2.23],
-      water: [87.0, 85.0, 91.0, 91.0, 90.5, 90.5] },
-    'X-6': { oilMax: 3,
-      oil:   [1.77, 1.28, 1.42, 1.95, 1.19, 0.74, 0.89, 0.44],
-      water: [25.0, 23.0, 26.0, 25.6, 24.3, 23.0, 22.0, 22.0] }
+      oil:   [0.41, 0.18, 0.12, null, null, 2.64, 2.33],
+      water: [95.6, 97.8, 98.4, null, null, 33.0, 21.8] },
+    'X-5': { oilMax: 6,
+      oil:   [5.10, 3.10, 2.00, 2.70, 2.90, 2.30, null],
+      water: [81.4, 88.6, 90.6, 85.9, 82.0, 89.3, null] },
+    'X-6': { oilMax: 5,
+      oil:   [3.63, 3.50, 2.68, 3.25, 2.26, 1.45, 0.73],
+      water: [23.3, 26.5, 27.9, 28.8, 22.9, 24.9, 22.2] }
   };
 
   function drawCase(canvas, key, progress) {
@@ -144,8 +145,9 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
 
-    var padL = 6, padR = 6, padT = 12, padB = 16;
+    var padL = 6, padR = 6, padT = 12, padB = 22;
     var gw = w - padL - padR, gh = h - padT - padB;
+    var n = MONTHS.length;
 
     var css = getComputedStyle(document.documentElement);
     var accent = css.getPropertyValue('--accent').trim() || '#6E7F6A';
@@ -159,39 +161,56 @@
       ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(w - padR, gy); ctx.stroke();
     }
 
+    function px(i) { return padL + gw * (i / (n - 1)); }
+    function py(v) { return padT + gh * (1 - v); }
+
+    // подписи месяцев
+    ctx.fillStyle = muted;
+    ctx.font = '9px "JetBrains Mono", ui-monospace, monospace';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    for (var m = 0; m < n; m++) ctx.fillText(MONTHS[m], px(m), padT + gh + 7);
+
+    // линия с разрывами на месяцах ремонта/простоя
     function plot(arr, color, dashed, prog) {
-      var n = arr.length;
       var lastIdx = (n - 1) * prog;
-      ctx.strokeStyle = color; ctx.lineWidth = 2;
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
       ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-      if (dashed) ctx.setLineDash([3, 4]); else ctx.setLineDash([]);
-      ctx.beginPath();
-      for (var i = 0; i < n; i++) {
-        if (i > lastIdx) {
-          // частичный последний сегмент
-          var frac = lastIdx - (i - 1);
-          if (frac <= 0) break;
-          var px0 = padL + gw * ((i - 1) / (n - 1));
-          var py0 = padT + gh * (1 - arr[i - 1]);
-          var px1 = padL + gw * (i / (n - 1));
-          var py1 = padT + gh * (1 - arr[i]);
-          ctx.lineTo(px0 + (px1 - px0) * frac, py0 + (py1 - py0) * frac);
-          break;
-        }
-        var x = padL + gw * (i / (n - 1));
-        var y = padT + gh * (1 - arr[i]);
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      ctx.setLineDash(dashed ? [3, 4] : []);
+
+      for (var i = 1; i < n; i++) {
+        if (i - 1 > lastIdx) break;
+        var a = arr[i - 1], b = arr[i];
+        if (a === null || b === null) continue;      // разрыв — месяц без работы
+        var frac = Math.min(1, lastIdx - (i - 1));
+        if (frac <= 0) continue;
+        var x0 = px(i - 1), y0 = py(a), x1 = px(i), y1 = py(b);
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x0 + (x1 - x0) * frac, y0 + (y1 - y0) * frac);
+        ctx.stroke();
       }
-      ctx.stroke();
+
+      // одиночные точки (месяц окружён разрывами) — чтобы не терялись
       ctx.setLineDash([]);
+      for (var j = 0; j < n; j++) {
+        if (arr[j] === null || j > lastIdx) continue;
+        var prevNull = (j === 0) || arr[j - 1] === null;
+        var nextNull = (j === n - 1) || arr[j + 1] === null;
+        if (prevNull && nextNull) {
+          ctx.beginPath(); ctx.arc(px(j), py(arr[j]), 2.5, 0, Math.PI * 2); ctx.fill();
+        }
+      }
     }
 
-    // нормализация в 0..1: нефть по oilMax, обводнённость по 100%
-    var oilN = s.oil.map(function (v) { return Math.max(0, Math.min(1, v / s.oilMax)); });
-    var waterN = s.water.map(function (v) { return Math.max(0, Math.min(1, v / 100)); });
+    // нормализация: нефть по oilMax, обводнённость по 100%; null сохраняем
+    function norm(arr, max) {
+      return arr.map(function (v) {
+        return v === null ? null : Math.max(0, Math.min(1, v / max));
+      });
+    }
 
-    plot(waterN, muted, true, progress);   // обводнённость, %
-    plot(oilN, accent, false, progress);   // дебит нефти, т/сут
+    plot(norm(s.water, 100), muted, true, progress);  // обводнённость, %
+    plot(norm(s.oil, s.oilMax), accent, false, progress); // дебит нефти, т/сут
   }
 
   function animateCase(canvas, key) {

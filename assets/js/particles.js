@@ -19,6 +19,42 @@
     };
   }
 
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+  function easeOut(p) { return 1 - Math.pow(1 - p, 3); }
+
+  // подгонка канваса под контейнер с учётом devicePixelRatio
+  function fit(canvas, ctx) {
+    var rect = canvas.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = Math.max(1, rect.width), h = Math.max(1, rect.height);
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { w: w, h: h };
+  }
+
+  // расталкивание слипшихся частиц пробки, чтобы она не схлопывалась в точку
+  function separate(list, floorY) {
+    for (var i = 0; i < list.length; i++) {
+      var a = list[i];
+      for (var k = i + 1; k < list.length; k++) {
+        var b = list[k];
+        var dx = a.x - b.x, dy = a.y - b.y;
+        var minD = a.r + b.r;
+        var d2 = dx * dx + dy * dy;
+        if (d2 >= minD * minD) continue;
+        var d = Math.sqrt(d2) || 0.001;
+        // если центры совпали — расходимся по горизонтали
+        if (d < 0.05) { dx = (Math.random() - 0.5) || 0.5; dy = -0.5; d = 1; }
+        var push = (minD - d) / d * 0.5;
+        a.x += dx * push; a.y += dy * push;
+        b.x -= dx * push; b.y -= dy * push;
+      }
+      if (a.y + a.r > floorY) a.y = floorY - a.r;
+    }
+  }
+
   /* ====================================================
      1. HERO — два потока: пробка vs сквозное проникновение
      ==================================================== */
@@ -27,230 +63,219 @@
 
   function initHero(canvas) {
     var ctx = canvas.getContext('2d');
-    var W = 0, H = 0, dpr = 1;
     var col = palette();
+    var W = 0, H = 0;
 
-    // геометрия сцены вычисляется относительно размеров канваса
-    var scene = {};
+    var S = {};        // геометрия сцены
+    var grain = [];    // статичная фактура породы
+    var coarse = [];   // обычный цемент — застревает на устье
+    var fine = [];     // NanoCem UT-9 — проходит в глубину
+    var t0 = 0;        // старт анимации
+
     function layout() {
-      var rect = canvas.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = rect.width; H = rect.height;
-      canvas.width = W * dpr; canvas.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var size = fit(canvas, ctx);
+      W = size.w; H = size.h;
 
-      scene.crackX = W * 0.5;          // центр трещины
-      scene.crackW = Math.max(6, W * 0.012); // ширина канала
-      scene.rockTop = H * 0.42;        // верх породного массива
-      scene.rockBot = H + 2;
-      scene.mouthY = scene.rockTop;    // устье трещины
+      // на широких экранах сцена уходит вправо, чтобы не спорить с заголовком
+      var wide = W >= 900;
+      S.boxX = wide ? W * 0.54 : 0;
+      S.boxW = wide ? W * 0.46 : W;
+      S.cx = S.boxX + S.boxW * (wide ? 0.44 : 0.5);
+      S.rockTop = Math.round(H * (wide ? 0.40 : 0.46));
+      S.chW = clamp(S.boxW * 0.05, 11, 26);
+      S.depth = H - S.rockTop;
+
+      grain = [];
+      var n = Math.round(S.boxW * S.depth / 950);
+      for (var i = 0; i < n; i++) {
+        var gx = rnd(S.boxX, S.boxX + S.boxW);
+        if (Math.abs(gx - S.cx) < S.chW / 2 + 2) continue; // не сорим в канале
+        grain.push({ x: gx, y: rnd(S.rockTop + 2, H), r: rnd(0.3, 1.3), a: rnd(0.02, 0.07) });
+      }
     }
-    layout();
 
-    // частицы
-    var big = [];   // обычный цемент — застревают
-    var fine = [];  // NanoCem — проходят
-    var N_BIG = 0, N_FINE = 0;
-
-    function rnd(a, b) { return a + Math.random() * (b - a); }
-
-    function spawnBig() {
+    function spawnCoarse() {
       return {
-        x: rnd(scene.crackX - W * 0.28, scene.crackX + W * 0.28),
-        y: rnd(-H * 0.3, scene.rockTop - 30),
+        x: rnd(S.cx - S.boxW * 0.22, S.cx + S.boxW * 0.22),
+        y: rnd(-S.rockTop * 1.6, S.rockTop - 40),
         r: rnd(9, 13),
-        vy: rnd(0.5, 1.1),
-        vx: 0,
+        vy: rnd(0.55, 1.15),
         stuck: false
       };
     }
-    function spawnFine() {
+
+    function spawnFine(above) {
       return {
-        x: rnd(scene.crackX - W * 0.30, scene.crackX + W * 0.30),
-        y: rnd(-H * 0.4, scene.rockTop - 20),
+        x: rnd(S.cx - S.boxW * 0.16, S.cx + S.boxW * 0.16),
+        y: above ? rnd(-S.rockTop, S.rockTop - 10) : rnd(-120, -8),
         r: rnd(1, 2),
-        vy: rnd(1.4, 2.4),
-        vx: 0,
-        through: false,
-        targetX: rnd(scene.crackX - scene.crackW * 0.35, scene.crackX + scene.crackW * 0.35),
-        depth: rnd(scene.rockTop + 20, scene.rockBot - 10)
+        vy: rnd(1.5, 2.6),
+        tx: S.cx + rnd(-S.chW * 0.34, S.chW * 0.34),
+        inside: false
       };
     }
 
     function seed() {
-      big = []; fine = [];
-      N_BIG = Math.max(10, Math.round(W / 70));
-      N_FINE = Math.max(80, Math.round(W / 4));
-      for (var i = 0; i < N_BIG; i++) { var b = spawnBig(); big.push(b); }
-      for (var j = 0; j < N_FINE; j++) { fine.push(spawnFine()); }
-    }
-    seed();
-
-    function drawScene() {
-      // породный массив
-      ctx.fillStyle = col.ink;
-      ctx.fillRect(0, 0, W, H);
-
-      // тело породы (чуть светлее, штриховка hairline)
-      ctx.save();
-      ctx.fillStyle = 'rgba(245,246,243,0.04)';
-      ctx.fillRect(0, scene.rockTop, W, H - scene.rockTop);
-      // граница породы
-      ctx.strokeStyle = 'rgba(138,143,136,0.5)';
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(0, scene.rockTop); ctx.lineTo(W, scene.rockTop); ctx.stroke();
-      ctx.restore();
-
-      // трещина (тёмный канал)
-      ctx.fillStyle = 'rgba(0,0,0,0.55)';
-      ctx.fillRect(scene.crackX - scene.crackW / 2, scene.rockTop, scene.crackW, H - scene.rockTop);
-      ctx.strokeStyle = 'rgba(138,143,136,0.35)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(scene.crackX - scene.crackW / 2, scene.rockTop, scene.crackW, H - scene.rockTop);
+      coarse = []; fine = [];
+      var nc = clamp(Math.round(S.boxW / 34), 10, 26);
+      var nf = clamp(Math.round(S.boxW / 3), 90, 260);
+      for (var i = 0; i < nc; i++) coarse.push(spawnCoarse());
+      for (var j = 0; j < nf; j++) fine.push(spawnFine(true));
     }
 
-    function step() {
-      var mouthLeft = scene.crackX - scene.crackW / 2;
-      var mouthRight = scene.crackX + scene.crackW / 2;
+    layout(); seed();
 
-      // --- крупные частицы: падают и образуют пробку на устье ---
-      var i, b;
-      for (i = 0; i < big.length; i++) {
-        b = big[i];
-        if (!b.stuck) {
-          b.y += b.vy;
-          // мягкое стягивание к устью
-          b.x += (scene.crackX - b.x) * 0.004;
-          // достигли устья — застревают (слишком крупные для канала)
-          if (b.y + b.r >= scene.mouthY) {
-            b.y = scene.mouthY - b.r;
-            b.stuck = true;
-          }
-        }
-        // лёгкое толкание соседями, чтобы пробка не накладывалась
-        for (var k = 0; k < big.length; k++) {
-          if (k === i) continue;
-          var o = big[k];
-          var dx = b.x - o.x, dy = b.y - o.y;
-          var d2 = dx * dx + dy * dy;
-          var minD = b.r + o.r;
-          if (d2 > 0 && d2 < minD * minD) {
-            var d = Math.sqrt(d2);
-            var push = (minD - d) / d * 0.5;
-            b.x += dx * push; b.y += dy * push;
-            if (b.y + b.r > scene.mouthY) b.y = scene.mouthY - b.r;
-          }
-        }
+    // доля заполнения трещины экраном: растёт после короткой задержки
+    function fillLevel(now) {
+      if (reduce) return 0.9;
+      return 0.9 * easeOut(clamp((now - t0 - 700) / 3800, 0, 1));
+    }
+
+    function step(intro) {
+      var i, p;
+
+      // --- крупные частицы: сходятся к устью и образуют пробку ---
+      for (i = 0; i < coarse.length; i++) {
+        p = coarse[i];
+        if (p.stuck) continue;
+        p.y += p.vy;
+        p.x += (S.cx - p.x) * 0.012;
+        if (p.y + p.r >= S.rockTop) { p.y = S.rockTop - p.r; p.stuck = true; }
       }
+      separate(coarse.filter(function (c) { return c.stuck; }), S.rockTop);
 
-      // --- мелкие частицы: проходят сквозь трещину ---
-      var f;
+      // --- мелкие частицы: воронка в канал и спуск на всю глубину ---
       for (i = 0; i < fine.length; i++) {
-        f = fine[i];
-        if (!f.through) {
-          f.y += f.vy;
-          if (f.y >= scene.rockTop - 4) {
-            // воронка ко входу в канал
-            f.x += (f.targetX - f.x) * 0.2;
-            if (Math.abs(f.x - scene.crackX) < scene.crackW / 2 + 1) {
-              f.through = true;
-            } else if (f.y > scene.rockTop + 6) {
-              // не попала точно — мягко доводим
-              f.x += (scene.crackX - f.x) * 0.15;
-            }
+        p = fine[i];
+        p.y += p.vy * (p.inside ? 0.85 : 1);
+        if (!p.inside) {
+          var d = S.rockTop - p.y;
+          if (d < 90) {
+            // чем ближе устье, тем сильнее стягивание к каналу
+            p.x += (p.tx - p.x) * clamp((90 - d) / 90, 0, 1) * 0.16;
           }
+          if (p.y >= S.rockTop) { p.inside = true; p.x = p.tx; }
         } else {
-          // внутри канала — спуск в глубину
-          f.y += f.vy * 0.9;
-          f.x += (f.targetX - f.x) * 0.25;
-          if (f.y > f.depth) {
-            // осела — респаун сверху для непрерывной циркуляции
-            var nf = spawnFine();
-            fine[i] = nf;
-          }
+          p.x += (p.tx - p.x) * 0.25;
         }
+        if (p.y - p.r > H) fine[i] = spawnFine(false);
       }
+      return intro;
     }
 
-    function render() {
-      drawScene();
+    function render(now) {
+      var intro = reduce ? 1 : easeOut(clamp((now - t0) / 1200, 0, 1));
+      var lift = (1 - intro) * 36;
+      var fill = fillLevel(now);
 
-      // мелкие частицы (рисуем под крупными)
-      ctx.fillStyle = col.accent;
-      var f;
-      for (var i = 0; i < fine.length; i++) {
-        f = fine[i];
-        ctx.globalAlpha = f.through ? 0.85 : 0.6;
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-        ctx.fill();
+      ctx.clearRect(0, 0, W, H);
+
+      // тело породы — мягкий уход в тень слева, чтобы не было резкой границы
+      var bg = ctx.createLinearGradient(S.boxX, 0, S.boxX + S.boxW * 0.55, 0);
+      bg.addColorStop(0, 'rgba(245,246,243,0)');
+      bg.addColorStop(1, 'rgba(245,246,243,0.05)');
+      ctx.fillStyle = bg;
+      ctx.fillRect(S.boxX, S.rockTop, S.boxW, S.depth);
+
+      // фактура породы
+      ctx.fillStyle = col.paper;
+      for (var g = 0; g < grain.length; g++) {
+        var q = grain[g];
+        ctx.globalAlpha = q.a * intro;
+        ctx.beginPath(); ctx.arc(q.x, q.y, q.r, 0, Math.PI * 2); ctx.fill();
       }
       ctx.globalAlpha = 1;
 
-      // крупные частицы (пробка)
-      var b;
-      for (var j = 0; j < big.length; j++) {
-        b = big[j];
-        ctx.beginPath();
+      // кровля пласта
+      var lineFrom = S.boxX - W * 0.22;
+      var lg = ctx.createLinearGradient(lineFrom, 0, S.boxX + S.boxW * 0.3, 0);
+      lg.addColorStop(0, 'rgba(138,143,136,0)');
+      lg.addColorStop(1, 'rgba(138,143,136,' + (0.55 * intro).toFixed(3) + ')');
+      ctx.strokeStyle = lg; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(lineFrom, S.rockTop + 0.5); ctx.lineTo(W, S.rockTop + 0.5);
+      ctx.stroke();
+
+      // канал фильтрации
+      var chL = S.cx - S.chW / 2;
+      ctx.globalAlpha = intro;
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(chL, S.rockTop, S.chW, S.depth);
+
+      // экран NanoCem — заполнение канала снизу вверх
+      if (fill > 0) {
+        var fh = S.depth * fill;
+        ctx.fillStyle = col.accent;
+        ctx.globalAlpha = 0.5 * intro;
+        ctx.fillRect(chL + 1, H - fh, S.chW - 2, fh);
+        ctx.globalAlpha = intro;
+      }
+
+      // стенки канала
+      ctx.strokeStyle = 'rgba(138,143,136,0.4)';
+      ctx.beginPath();
+      ctx.moveTo(chL + 0.5, S.rockTop); ctx.lineTo(chL + 0.5, H);
+      ctx.moveTo(chL + S.chW - 0.5, S.rockTop); ctx.lineTo(chL + S.chW - 0.5, H);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // мелкие частицы
+      var i, p;
+      ctx.fillStyle = col.accent;
+      for (i = 0; i < fine.length; i++) {
+        p = fine[i];
+        ctx.globalAlpha = (p.inside ? 0.9 : 0.55) * intro;
+        ctx.beginPath(); ctx.arc(p.x, p.y - lift, p.r, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // крупные частицы — пробка на устье
+      for (i = 0; i < coarse.length; i++) {
+        p = coarse[i];
+        ctx.globalAlpha = 0.92 * intro;
         ctx.fillStyle = col.muted;
-        ctx.globalAlpha = 0.9;
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 0.5;
+        ctx.beginPath(); ctx.arc(p.x, p.y - lift, p.r, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 0.45 * intro;
         ctx.lineWidth = 1; ctx.strokeStyle = col.paper;
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
     }
 
-    var raf = null;
-    function loop() { step(); render(); raf = requestAnimationFrame(loop); }
-
     function staticFrame() {
-      // финальный кадр: пробка на устье + заполненная трещина
-      drawScene();
-      // заполненная трещина
-      ctx.fillStyle = col.accent;
-      ctx.globalAlpha = 0.85;
-      ctx.fillRect(scene.crackX - scene.crackW / 2, scene.rockTop, scene.crackW, H - scene.rockTop);
-      // немного мелких частиц по глубине
-      for (var i = 0; i < 60; i++) {
-        ctx.beginPath();
-        ctx.globalAlpha = rnd(0.4, 0.9);
-        var x = scene.crackX + rnd(-scene.crackW / 2, scene.crackW / 2);
-        var y = rnd(scene.rockTop, H);
-        ctx.arc(x, y, rnd(1, 2), 0, Math.PI * 2);
-        ctx.fill();
+      // финальный кадр: пробка на устье + заполненный экран в трещине
+      var guard = 0;
+      while (coarse.some(function (c) { return !c.stuck; }) && guard++ < 4000) step(1);
+      for (var i = 0; i < fine.length; i++) {
+        var p = fine[i];
+        p.inside = true; p.x = p.tx;
+        p.y = rnd(S.rockTop + 4, H - 4);
       }
-      ctx.globalAlpha = 1;
-      // пробка крупных
-      ctx.fillStyle = col.muted;
-      for (var j = 0; j < big.length; j++) {
-        var bx = scene.crackX + rnd(-W * 0.18, W * 0.18);
-        ctx.globalAlpha = 0.9;
-        ctx.beginPath();
-        ctx.arc(bx, scene.mouthY - rnd(6, 14), rnd(9, 13), 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
+      render(t0);
+    }
+
+    var raf = null;
+    function loop(now) {
+      if (!t0) t0 = now;
+      step();
+      render(now);
+      raf = requestAnimationFrame(loop);
     }
 
     if (reduce) {
-      staticFrame();
+      t0 = 0; staticFrame();
     } else {
-      loop();
+      raf = requestAnimationFrame(loop);
     }
 
-    // пауза анимации, когда hero вне зоны видимости (экономия)
+    // пауза, когда hero вне зоны видимости
     var heroSection = document.getElementById('hero');
     if (!reduce && heroSection && 'IntersectionObserver' in window) {
-      var io = new IntersectionObserver(function (entries) {
+      new IntersectionObserver(function (entries) {
         entries.forEach(function (en) {
-          if (en.isIntersecting && raf === null) { loop(); }
+          if (en.isIntersecting && raf === null) raf = requestAnimationFrame(loop);
           else if (!en.isIntersecting && raf !== null) { cancelAnimationFrame(raf); raf = null; }
         });
-      }, { threshold: 0 });
-      io.observe(heroSection);
+      }, { threshold: 0 }).observe(heroSection);
     }
 
     var rT;
@@ -266,7 +291,7 @@
 
   /* ====================================================
      2. СЛАЙДЕР МАСШТАБА (§5.3)
-     Размер частиц уменьшается → поток проходит трещину
+     Размер частиц уменьшается → поток начинает проходить трещину
      ==================================================== */
   var scaleCanvas = document.getElementById('scaleCanvas');
   var scaleRange = document.getElementById('scaleRange');
@@ -274,137 +299,190 @@
 
   function initScale(canvas, range) {
     var ctx = canvas.getContext('2d');
-    var W = 0, H = 0, dpr = 1;
     var col = palette();
-    var t = parseInt(range.value, 10) / 100; // 0 = крупный, 1 = мелкий
+    var W = 0, H = 0;
+    var t = clamp(parseInt(range.value, 10) / 100, 0, 1); // 0 — крупный помол, 1 — UT-9
+    var S = {};
     var parts = [];
+    var fill = 0;
+    var labelL = document.getElementById('scaleLabelL');
+    var labelR = document.getElementById('scaleLabelR');
 
     function layout() {
-      var rect = canvas.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = rect.width; H = rect.height;
-      canvas.width = W * dpr; canvas.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var size = fit(canvas, ctx);
+      W = size.w; H = size.h;
+      S.cx = W * 0.5;
+      S.chW = clamp(W * 0.028, 11, 16);
+      S.rockTop = Math.round(H * 0.34);
+      S.depth = H - S.rockTop;
     }
-    layout();
 
-    var crackW = 10; // фиксированная ширина трещины
-    function rockTop() { return H * 0.4; }
+    // радиус частицы при текущем помоле; jitter даёт разброс фракции
+    function radius(p) { return (9.2 - t * 7.8) * p.j; }
+    function passes(p) { return radius(p) <= S.chW / 2 - 0.8; }
+
+    function spawn(above) {
+      return {
+        x: rnd(S.cx - W * 0.2, S.cx + W * 0.2),
+        y: above ? rnd(-S.rockTop, S.rockTop - 6) : rnd(-70, -6),
+        vy: rnd(0.8, 1.7),
+        j: rnd(0.84, 1.16),
+        tx: S.cx + rnd(-S.chW * 0.3, S.chW * 0.3),
+        stuck: false,
+        inside: false
+      };
+    }
 
     function seed() {
       parts = [];
-      var n = 70;
-      for (var i = 0; i < n; i++) {
-        parts.push({
-          x: W * 0.5 + (Math.random() - 0.5) * W * 0.5,
-          y: Math.random() * rockTop(),
-          vy: 0.6 + Math.random() * 1.4,
-          seed: Math.random(),
-          through: false,
-          tx: W * 0.5 + (Math.random() - 0.5) * crackW * 0.6
-        });
-      }
-    }
-    seed();
-
-    function radius() {
-      // крупный 11px (пробка) → мелкий 2px (проходит)
-      return 11 - t * 9;
+      var n = clamp(Math.round(W / 9), 40, 90);
+      for (var i = 0; i < n; i++) parts.push(spawn(true));
     }
 
-    function drawScene() {
-      ctx.fillStyle = col.ink; ctx.fillRect(0, 0, W, H);
-      var rt = rockTop();
-      ctx.fillStyle = 'rgba(245,246,243,0.05)';
-      ctx.fillRect(0, rt, W, H - rt);
-      ctx.strokeStyle = 'rgba(138,143,136,0.45)'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(0, rt); ctx.lineTo(W, rt); ctx.stroke();
-      // трещина
-      ctx.fillStyle = 'rgba(0,0,0,0.5)';
-      ctx.fillRect(W / 2 - crackW / 2, rt, crackW, H - rt);
+    layout(); seed();
+
+    function passFraction() {
+      var k = 0;
+      for (var i = 0; i < parts.length; i++) if (passes(parts[i])) k++;
+      return parts.length ? k / parts.length : 0;
     }
 
     function step() {
-      var r = radius();
-      var passes = r <= crackW / 2 + 0.5; // проходит ли частица в канал
-      var cx = W / 2, rt = rockTop();
-      for (var i = 0; i < parts.length; i++) {
-        var p = parts[i];
-        if (!p.through) {
-          p.y += p.vy;
-          if (p.y >= rt - r) {
-            if (passes) {
-              p.x += (p.tx - p.x) * 0.2;
-              if (Math.abs(p.x - cx) < crackW / 2) p.through = true;
-              else p.y = rt - r; // ждёт у устья
-            } else {
-              // застряли — пробка на устье
-              p.y = rt - r;
-              p.x += (cx - p.x) * 0.02;
-            }
-          }
-        } else {
-          p.y += p.vy;
-          p.x += (p.tx - p.x) * 0.3;
-          if (p.y > H + r) { p.y = -r; p.through = false; p.x = cx + (Math.random() - 0.5) * W * 0.5; }
+      var i, p, r;
+      for (i = 0; i < parts.length; i++) {
+        p = parts[i]; r = radius(p);
+
+        if (p.stuck) continue;
+
+        if (p.inside) {
+          p.y += p.vy * 0.85;
+          p.x += (p.tx - p.x) * 0.28;
+          if (p.y - r > H) parts[i] = spawn(false);
+          continue;
+        }
+
+        p.y += p.vy;
+        var d = S.rockTop - p.y;
+        if (d < 70) p.x += (p.tx - p.x) * clamp((70 - d) / 70, 0, 1) * 0.18;
+
+        if (p.y + r >= S.rockTop) {
+          if (passes(p)) { p.inside = true; p.x = p.tx; p.y = S.rockTop + r; }
+          else { p.y = S.rockTop - r; p.stuck = true; }   // слишком крупная — пробка
         }
       }
+
+      separate(parts.filter(function (q) { return q.stuck; }), S.rockTop);
+
+      // экран растёт ровно настолько, насколько фракция проходит в канал
+      var target = 0.92 * passFraction();
+      fill += (target - fill) * 0.05;
+    }
+
+    function drawScene(intro) {
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = col.ink; ctx.fillRect(0, 0, W, H);
+
+      // тело породы
+      ctx.fillStyle = 'rgba(245,246,243,0.05)';
+      ctx.fillRect(0, S.rockTop, W, S.depth);
+      ctx.strokeStyle = 'rgba(138,143,136,0.45)'; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, S.rockTop + 0.5); ctx.lineTo(W, S.rockTop + 0.5);
+      ctx.stroke();
+
+      var chL = S.cx - S.chW / 2;
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(chL, S.rockTop, S.chW, S.depth);
+
+      if (fill > 0.005) {
+        var fh = S.depth * fill;
+        ctx.fillStyle = col.accent;
+        ctx.globalAlpha = 0.55;
+        ctx.fillRect(chL + 1, H - fh, S.chW - 2, fh);
+        ctx.globalAlpha = 1;
+      }
+
+      ctx.strokeStyle = 'rgba(138,143,136,0.4)';
+      ctx.beginPath();
+      ctx.moveTo(chL + 0.5, S.rockTop); ctx.lineTo(chL + 0.5, H);
+      ctx.moveTo(chL + S.chW - 0.5, S.rockTop); ctx.lineTo(chL + S.chW - 0.5, H);
+      ctx.stroke();
     }
 
     function render() {
       drawScene();
-      var r = radius();
-      var passes = r <= crackW / 2 + 0.5;
-      ctx.fillStyle = passes ? col.accent : col.muted;
       for (var i = 0; i < parts.length; i++) {
-        var p = parts[i];
-        ctx.globalAlpha = p.through ? 0.85 : 0.8;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-        ctx.fill();
+        var p = parts[i], r = radius(p);
+        var through = passes(p);
+        ctx.fillStyle = through ? col.accent : col.muted;
+        ctx.globalAlpha = p.inside ? 0.9 : 0.8;
+        ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+        if (!through) {
+          ctx.globalAlpha = 0.35;
+          ctx.lineWidth = 1; ctx.strokeStyle = col.paper; ctx.stroke();
+        }
       }
       ctx.globalAlpha = 1;
+    }
+
+    function updateLabels() {
+      if (!labelL || !labelR) return;
+      var f = passFraction();
+      labelL.classList.toggle('dim', f > 0.6);
+      labelR.classList.toggle('dim', f < 0.4);
+    }
+
+    function settle(frames) {
+      for (var i = 0; i < frames; i++) step();
+      fill = 0.92 * passFraction();
+    }
+
+    function staticFrame() {
+      settle(600);
+      render();
+      updateLabels();
     }
 
     var raf = null;
     function loop() { step(); render(); raf = requestAnimationFrame(loop); }
 
-    function staticFrame() {
-      drawScene();
-      var r = radius();
-      var passes = r <= crackW / 2 + 0.5;
-      var rt = rockTop();
-      ctx.fillStyle = passes ? col.accent : col.muted;
-      if (passes) {
-        ctx.globalAlpha = 0.85;
-        ctx.fillRect(W / 2 - crackW / 2, rt, crackW, H - rt);
-      } else {
-        for (var i = 0; i < 14; i++) {
-          ctx.globalAlpha = 0.85;
-          ctx.beginPath();
-          ctx.arc(W / 2 + (Math.random() - 0.5) * W * 0.3, rt - r, r, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      ctx.globalAlpha = 1;
-    }
-
     range.addEventListener('input', function () {
-      t = parseInt(range.value, 10) / 100;
+      t = clamp(parseInt(range.value, 10) / 100, 0, 1);
+      // частицы, переставшие помещаться в канал, возвращаются к устью
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i];
+        if (p.stuck && passes(p)) { p.stuck = false; }
+        else if (p.inside && !passes(p)) { parts[i] = spawn(true); }
+      }
+      updateLabels();
       if (reduce) staticFrame();
     });
 
-    if (reduce) {
-      t = 0.5; staticFrame();
-      range.addEventListener('input', function () { t = parseInt(range.value, 10) / 100; staticFrame(); });
-    } else {
-      loop();
+    updateLabels();
+    if (reduce) staticFrame();
+    else {
+      // сцена стартует уже «живой», а не с пустого кадра
+      settle(90);
+      raf = requestAnimationFrame(loop);
+    }
+
+    // считаем только когда демо на экране
+    if (!reduce && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting && raf === null) raf = requestAnimationFrame(loop);
+          else if (!en.isIntersecting && raf !== null) { cancelAnimationFrame(raf); raf = null; }
+        });
+      }, { threshold: 0 }).observe(canvas);
     }
 
     var rT;
     window.addEventListener('resize', function () {
       clearTimeout(rT);
-      rT = setTimeout(function () { col = palette(); layout(); seed(); if (reduce) staticFrame(); }, 150);
+      rT = setTimeout(function () {
+        col = palette(); layout(); seed();
+        if (reduce) staticFrame(); else settle(60);
+      }, 150);
     });
   }
 
