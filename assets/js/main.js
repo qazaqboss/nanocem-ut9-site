@@ -110,12 +110,27 @@
   }
 
   /* ---------- Графики кейсов (Canvas) ---------- */
-  // Серии: точки нормированы 0..1, добыча (oil) и обводнённость (water)
+  // Фактические замеры: oil — дебит нефти, т/сут; water — обводнённость, %
+  // oilMax задаёт верх шкалы по нефти для конкретной скважины.
   var SERIES = {
-    'X-1': { oil: [0.05, 0.55, 0.95, 0.82, 0.78, 0.75], water: [0.30, 0.28, 0.275, 0.32, 0.34, 0.34] },
-    'X-2': { oil: [0.06, 0.04, 0.20, 0.62, 0.80, 0.83], water: [0.92, 0.94, 0.70, 0.40, 0.30, 0.28] },
-    'X-3': { oil: [0.10, 0.50, 0.85, 0.90, 0.88, 0.87], water: [0.40, 0.33, 0.29, 0.277, 0.28, 0.28] },
-    'X-4': { oil: [0.08, 0.06, 0.05, 0.04, 0.03, 0.03], water: [0.92, 0.95, 0.97, 0.99, 0.995, 0.995] }
+    'X-1': { oilMax: 16,
+      oil:   [2.73, 11.11, 14.16, 15.18, 10.25, 9.85, 10.67, 11.12],
+      water: [86.0, 43.0,  28.0,  24.8,  32.2,  38.4, 37.7,  37.0] },
+    'X-2': { oilMax: 12,
+      oil:   [5.71, 7.73, 8.32, 8.19, 8.32, 8.97, 9.41, 10.34, 10.68],
+      water: [54.3, 27.5, 30.0, 29.0, 28.4, 28.7, 31.0, 30.8,  29.8] },
+    'X-3': { oilMax: 16,
+      oil:   [14.36, 14.32, 13.94, 13.67, 13.29, 13.63, 13.76, 13.54, 13.86, 13.66],
+      water: [34.8,  36.0,  34.1,  34.0,  33.6,  32.5,  36.5,  36.5,  35.8,  35.4] },
+    'X-4': { oilMax: 4,
+      oil:   [2.64, 2.20, 1.96, 2.39, 2.52, 2.52, 2.40, 1.91, 2.27],
+      water: [33.0, 28.0, 30.0, 22.0, 20.0, 19.9, 19.4, 19.1, 18.7] },
+    'X-5': { oilMax: 4,
+      oil:   [2.58, 2.98, 1.86, 2.01, 2.20, 2.23],
+      water: [87.0, 85.0, 91.0, 91.0, 90.5, 90.5] },
+    'X-6': { oilMax: 3,
+      oil:   [1.77, 1.28, 1.42, 1.95, 1.19, 0.74, 0.89, 0.44],
+      water: [25.0, 23.0, 26.0, 25.6, 24.3, 23.0, 22.0, 22.0] }
   };
 
   function drawCase(canvas, key, progress) {
@@ -171,8 +186,12 @@
       ctx.setLineDash([]);
     }
 
-    plot(s.water, muted, true, progress);   // обводнённость
-    plot(s.oil, accent, false, progress);   // добыча
+    // нормализация в 0..1: нефть по oilMax, обводнённость по 100%
+    var oilN = s.oil.map(function (v) { return Math.max(0, Math.min(1, v / s.oilMax)); });
+    var waterN = s.water.map(function (v) { return Math.max(0, Math.min(1, v / 100)); });
+
+    plot(waterN, muted, true, progress);   // обводнённость, %
+    plot(oilN, accent, false, progress);   // дебит нефти, т/сут
   }
 
   function animateCase(canvas, key) {
@@ -198,6 +217,16 @@
     });
   }, { threshold: 0.3 });
   document.querySelectorAll('[data-case]').forEach(function (c) { caseObs.observe(c); });
+
+  // счётчики вне карточек кейсов (сводка по фонду)
+  var numObs = new IntersectionObserver(function (entries, obs) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      en.target.querySelectorAll('.num').forEach(animateCount);
+      obs.unobserve(en.target);
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.summary').forEach(function (el) { numObs.observe(el); });
 
   // перерисовка графиков при ресайзе (статичный финальный кадр)
   var rT;

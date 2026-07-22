@@ -514,8 +514,7 @@
         <h2 class="h2 reveal">Технические характеристики</h2>
         <p class="lead lead--mono reveal">ТУ&nbsp;5745-001-171140033124-2025</p>
 
-        <div class="specs__grid">
-          <div class="specs__table reveal">
+        <div class="specs__table reveal">
             <table class="spec-table">
               <tbody>
                 <tr><th>Внешний вид</th><td>Порошок серого цвета</td></tr>
@@ -539,29 +538,7 @@
                 <tr><th>Толщина слоя</th><td>5–100 мм (в зонах потери циркуляции до 100 мм)</td></tr>
               </tbody>
             </table>
-            <p class="specs__note">Упаковка — бумажные мешки 25&nbsp;кг и&nbsp;биг-бэги 1000&nbsp;кг. Гарантийный срок хранения — 12&nbsp;месяцев со дня изготовления.</p>
-          </div>
-
-          <!-- Калькулятор -->
-          <aside class="calc reveal" id="calc">
-            <p class="eyebrow">Калькулятор расхода</p>
-            <div class="calc__field">
-              <label for="calcVolume">Объём заполнения, м³</label>
-              <input type="number" id="calcVolume" min="0" step="0.1" value="10" inputmode="decimal" />
-            </div>
-            <div class="calc__field">
-              <label for="calcWT">Водотвёрдое отношение В/Т: <span class="calc__wtval" id="calcWTval">0,67</span></label>
-              <input type="range" id="calcWT" min="0.55" max="0.80" step="0.01" value="0.67" />
-            </div>
-
-            <div class="calc__out">
-              <div class="calc__row"><span>Масса сухой смеси</span><b id="outMass">— кг</b></div>
-              <div class="calc__row"><span>В тоннах</span><b id="outTons">— т</b></div>
-              <div class="calc__row"><span>Мешки 25 кг</span><b id="outBags">—</b></div>
-              <div class="calc__row"><span>Биг-бэги 1000 кг</span><b id="outBigbags">—</b></div>
-            </div>
-            <p class="calc__note">Ориентировочный расчёт. Точный расход определяется по проекту работ.</p>
-          </aside>
+          <p class="specs__note">Упаковка — бумажные мешки 25&nbsp;кг и&nbsp;биг-бэги 1000&nbsp;кг. Гарантийный срок хранения — 12&nbsp;месяцев со дня изготовления.</p>
         </div>
       </div>
     </section>
@@ -571,7 +548,18 @@
       <div class="wrap">
         <p class="eyebrow reveal"><svg class="mark" width="14" height="14"><use href="#diamond"/></svg> 05&nbsp;/&nbsp;КЕЙСЫ</p>
         <h2 class="h2 reveal">Кейсы. Результаты работ</h2>
-        <p class="lead reveal">Ремонтно-изоляционные работы в&nbsp;нефтяных скважинах. План–факт по объектам заказчика.</p>
+        <p class="lead reveal">Ремонтно-изоляционные работы в&nbsp;нефтяных скважинах. Оперативная сводка по фонду, план–факт.</p>
+        <p class="cases__asof reveal">
+          Период наблюдений: 01.06.2026 — 17.07.2026 · показатели приведены по состоянию на&nbsp;17.07.2026 ·
+          за 20–29.06.2026 данные в&nbsp;источнике отсутствуют
+        </p>
+
+        <div class="summary reveal">
+          <div class="summary__cell"><b class="num" data-count="4" data-dec="0">0</b><i>скважины в работе</i></div>
+          <div class="summary__cell"><b class="num" data-count="65" data-dec="1">0</b><i>м³/сут жидкости</i></div>
+          <div class="summary__cell"><b class="num" data-count="37.73" data-dec="2">0</b><i>т/сут нефти</i></div>
+          <div class="summary__cell"><b class="num" data-count="2" data-dec="0">0</b><i>скважины в ремонте</i></div>
+        </div>
 
         <div class="cases">
 
@@ -579,17 +567,20 @@
             <header class="case__head">
               <h3 class="case__title">Скважина X-1</h3>
               <div class="case__stats">
-                <span class="stat"><b class="num" data-count="16.4" data-dec="1">0</b><i>т/сут · пик</i></span>
-                <span class="stat"><b class="num" data-count="27.5" data-dec="1">0</b><i>% обводнённость</i></span>
+                <span class="stat"><b class="num" data-count="11.12" data-dec="2">0</b><i>т/сут нефти</i></span>
+                <span class="stat"><b class="num" data-count="37" data-dec="1">0</b><i>% обводнённость</i></span>
               </div>
             </header>
+            <p class="case__meta">Горизонт J1-IV · КРС/ТРС по 12.06.2026 · запуск 13.06.2026 · данные по 17.07.2026</p>
             <div class="case__chart"><canvas class="caseCanvas" data-series="X-1"></canvas></div>
+            <p class="case__legend"><i class="ln ln--oil"></i>нефть, т/сут<i class="ln ln--water"></i>обводнённость, %</p>
             <p class="case__text">
-              УШВН 33/900, глубина 585&nbsp;м, горизонт J1-IV. После РИР (КРС 29.01–02.02.2026) выход на
-              пик 16,4&nbsp;т/сут при обводнённости 27,5% (19.03.2026), затем стабилизация ~13,5&nbsp;т/сут при
-              ~34%. При повышении оборотов насоса (120&nbsp;→&nbsp;140&nbsp;об/мин, 16.03.2026) обводнённость
-              выросла — это прорыв конуса воды по высокопроницаемым каналам при увеличении депрессии,
-              а&nbsp;не недоработка изоляции.
+              УШВН 33/900. 13.06.2026 — запуск винтового насоса на 80&nbsp;об/мин и&nbsp;вывод на режим.
+              С&nbsp;14.06 обводнённость упала с&nbsp;86% до&nbsp;24,8% (19.06) при выходе на ~15&nbsp;т/сут — прямой
+              эффект изоляции. В&nbsp;июле ступенчатый разгон насоса (80&nbsp;→&nbsp;100&nbsp;→&nbsp;110&nbsp;→&nbsp;120&nbsp;об/мин):
+              дебит жидкости вырос с&nbsp;17,2 до&nbsp;20,2&nbsp;м³/сут, нефть — до&nbsp;11,12&nbsp;т/сут при обводнённости
+              37,0% на&nbsp;17.07.2026. Рост обводнённости связан с&nbsp;увеличением депрессии при разгоне,
+              а&nbsp;не с&nbsp;нарушением изоляционного экрана.
             </p>
           </article>
 
@@ -597,15 +588,19 @@
             <header class="case__head">
               <h3 class="case__title">Скважина X-2</h3>
               <div class="case__stats">
-                <span class="stat"><b class="num" data-count="8.3" data-dec="1">0</b><i>т/сут · после</i></span>
-                <span class="stat"><b class="num" data-count="28" data-dec="0">0</b><i>% обводнённость</i></span>
+                <span class="stat"><b class="num" data-count="10.68" data-dec="2">0</b><i>т/сут нефти</i></span>
+                <span class="stat"><b class="num" data-count="29.8" data-dec="1">0</b><i>% обводнённость</i></span>
               </div>
             </header>
+            <p class="case__meta">Горизонт J1-IV · КРС по 05.06.2026 · запуск 06.06.2026 · данные по 17.07.2026</p>
             <div class="case__chart"><canvas class="caseCanvas" data-series="X-2"></canvas></div>
+            <p class="case__legend"><i class="ln ln--oil"></i>нефть, т/сут<i class="ln ln--water"></i>обводнённость, %</p>
             <p class="case__text">
-              До вмешательства — деградация до 0,6&nbsp;т/сут при 94% обводнённости. После КРС (12.05.2026)
-              восстановлена до ~8,3&nbsp;т/сут при ~28%: практически обводнённая скважина возвращена в
-              рабочий фонд.
+              УШВН 33/900. По&nbsp;05.06.2026 — ремонт с&nbsp;выдержкой на твердение, 06.06 запуск на 80&nbsp;об/мин.
+              После вывода на режим обводнённость снизилась с&nbsp;54,3% до&nbsp;27,5% — эффект изоляции.
+              Далее устойчивый рост за счёт ступенчатого разгона насоса
+              (80&nbsp;→&nbsp;100&nbsp;→&nbsp;120&nbsp;→&nbsp;130&nbsp;→&nbsp;150&nbsp;об/мин): дебит жидкости с&nbsp;13,2 до&nbsp;17,4&nbsp;м³/сут,
+              нефть с&nbsp;8,1 до&nbsp;10,68&nbsp;т/сут при стабильной обводнённости ~30% на&nbsp;17.07.2026.
             </p>
           </article>
 
@@ -613,14 +608,18 @@
             <header class="case__head">
               <h3 class="case__title">Скважина X-3</h3>
               <div class="case__stats">
-                <span class="stat"><b class="num" data-count="14.3" data-dec="1">0</b><i>т/сут</i></span>
-                <span class="stat"><b class="num" data-count="27.7" data-dec="1">0</b><i>% обводнённость</i></span>
+                <span class="stat"><b class="num" data-count="13.66" data-dec="2">0</b><i>т/сут нефти</i></span>
+                <span class="stat"><b class="num" data-count="35.4" data-dec="1">0</b><i>% обводнённость</i></span>
               </div>
             </header>
+            <p class="case__meta">Горизонт J1-IV · стабильный режим 160&nbsp;об/мин · данные по 17.07.2026</p>
             <div class="case__chart"><canvas class="caseCanvas" data-series="X-3"></canvas></div>
+            <p class="case__legend"><i class="ln ln--oil"></i>нефть, т/сут<i class="ln ln--water"></i>обводнённость, %</p>
             <p class="case__text">
-              После КРС/ТРС вышла на 14,3&nbsp;т/сут при 27,7% обводнённости в&nbsp;течение трёх суток после
-              запуска — быстрый выход на режим.
+              УШВН 33/900. Самая стабильная скважина фонда: работает ровно на 160&nbsp;об/мин, дебит жидкости
+              23–25&nbsp;м³/сут, нефть 13,3–14,4&nbsp;т/сут, обводнённость держится в&nbsp;коридоре 32–36,5% без
+              признаков ухудшения. Динамический уровень улучшился с&nbsp;175 до&nbsp;128–155&nbsp;м. На&nbsp;17.07.2026 —
+              13,66&nbsp;т/сут при 35,4%.
             </p>
           </article>
 
@@ -628,24 +627,75 @@
             <header class="case__head">
               <h3 class="case__title">Скважина X-4</h3>
               <div class="case__stats">
-                <span class="stat"><b class="num" data-count="99.5" data-dec="1">0</b><i>% макс. обводнённость</i></span>
-                <span class="stat status">КРС с 11.06.2026</span>
+                <span class="stat"><b class="num" data-count="2.27" data-dec="2">0</b><i>т/сут нефти</i></span>
+                <span class="stat"><b class="num" data-count="18.7" data-dec="1">0</b><i>% обводнённость</i></span>
               </div>
             </header>
+            <p class="case__meta">Горизонт J1-IV · остановлена 01.06.2026 · КРС с 11.06.2026 · данные по 17.07.2026</p>
             <div class="case__chart"><canvas class="caseCanvas" data-series="X-4"></canvas></div>
+            <p class="case__legend"><i class="ln ln--oil"></i>нефть, т/сут<i class="ln ln--water"></i>обводнённость, %</p>
             <p class="case__text">
-              Работала при экстремальной обводнённости 92–99,5%, остановлена 13.03, КРС начат с
-              11.06.2026 — результаты по завершении.
+              УШВН 33/900. С&nbsp;01.06.2026 остановлена из-за высокой обводнённости, с&nbsp;11.06 — ремонт.
+              После него обводнённость устойчиво снижается с&nbsp;33% до&nbsp;18,7% — изоляция работает.
+              При этом дебит остаётся низким (2,7–4,5&nbsp;м³/сут) и&nbsp;к&nbsp;середине июля просел,
+              динамический уровень ушёл с&nbsp;364 до&nbsp;503&nbsp;м: ограничение по притоку или подаче насоса,
+              а&nbsp;не по изоляции.
+            </p>
+          </article>
+
+          <article class="case reveal" data-case>
+            <header class="case__head">
+              <h3 class="case__title">Скважина X-5</h3>
+              <div class="case__stats">
+                <span class="stat"><b class="num" data-count="91" data-dec="0">0</b><i>% обв. до работ</i></span>
+                <span class="stat status">В ремонте</span>
+              </div>
+            </header>
+            <p class="case__meta">Горизонт J1-IV · остановлена 30.06.2026 · КРС с 05.07.2026 · NanoCem UT-9 закачан 09.07.2026</p>
+            <div class="case__chart"><canvas class="caseCanvas" data-series="X-5"></canvas></div>
+            <p class="case__legend"><i class="ln ln--oil"></i>нефть, т/сут<i class="ln ln--water"></i>обводнённость, %</p>
+            <p class="case__text">
+              УШВН 33/900, насос заменён 28.06.2026. Весь июнь — обводнённость 85–91% при нефти
+              1,8–2,2&nbsp;т/сут: скважина поднимала преимущественно воду. 30.06 остановка, 01–02.07
+              компрессирование и&nbsp;геофизические исследования (вытеснено 91,6&nbsp;м³ пластовой воды),
+              03–04.07 обработка материалов. С&nbsp;05.07 — ремонт, <b>09.07.2026 закачан NanoCem&nbsp;UT-9</b>
+              для изоляции обводнённого интервала. На&nbsp;17.07.2026 работы продолжаются — результаты
+              по завершении.
+            </p>
+          </article>
+
+          <article class="case reveal" data-case>
+            <header class="case__head">
+              <h3 class="case__title">Скважина X-6</h3>
+              <div class="case__stats">
+                <span class="stat"><b class="num" data-count="22" data-dec="0">0</b><i>% обводнённость</i></span>
+                <span class="stat status">В ремонте</span>
+              </div>
+            </header>
+            <p class="case__meta">Горизонт J1-IV · падение притока · КРС с 05.07.2026 · пакер на 425 м</p>
+            <div class="case__chart"><canvas class="caseCanvas" data-series="X-6"></canvas></div>
+            <p class="case__legend"><i class="ln ln--oil"></i>нефть, т/сут<i class="ln ln--water"></i>обводнённость, %</p>
+            <p class="case__text">
+              УШВН 33/900, 70&nbsp;об/мин. Прогрессирующее падение притока: с&nbsp;2,7&nbsp;м³/сут в&nbsp;начале июня
+              до&nbsp;0,7&nbsp;м³/сут к&nbsp;05.07.2026 при низкой обводнённости ~22% — ограничение по притоку,
+              а&nbsp;не по воде. 05.07 остановлена и&nbsp;выведена в&nbsp;ремонт. На&nbsp;17.07.2026 установлен
+              технологический пакер на глубине 425&nbsp;м, опрессован на 40&nbsp;атм — герметично. По плану —
+              тампонирование под давлением ультрадисперсным составом интервалов 454–457,3&nbsp;м
+              и&nbsp;474–477,4&nbsp;м с&nbsp;выдержкой под давлением 24&nbsp;часа.
             </p>
           </article>
 
         </div>
 
         <div class="callout reveal">
+          <p class="eyebrow">Вывод по периоду</p>
           <p>
-            Смесь возвращает в&nbsp;работу сильно обводнённые скважины, отсекая приток воды и&nbsp;сохраняя
-            нефтяную часть пласта. Постпиковый рост обводнённости связан с&nbsp;режимом эксплуатации
-            (обороты насоса, депрессия, конусообразование), а&nbsp;не с&nbsp;разрушением изоляционного экрана.
+            На&nbsp;17.07.2026 в&nbsp;работе четыре скважины — суммарно 65,0&nbsp;м³/сут жидкости и&nbsp;37,73&nbsp;т/сут нефти.
+            Эффект изоляции виден на скважинах X-1 и&nbsp;X-2: после вывода на режим обводнённость упала
+            кратно (86&nbsp;→&nbsp;25% и&nbsp;54&nbsp;→&nbsp;27,5%), обе наращивают дебит за счёт ступенчатого разгона насоса.
+            Ещё две скважины в&nbsp;ремонте с&nbsp;применением ультрадисперсного состава. Постпиковый рост
+            обводнённости связан с&nbsp;режимом эксплуатации (обороты насоса, депрессия, конусообразование),
+            а&nbsp;не с&nbsp;разрушением изоляционного экрана.
           </p>
         </div>
       </div>
@@ -695,6 +745,5 @@
 
   <script src="assets/js/main.js" defer></script>
   <script src="assets/js/particles.js" defer></script>
-  <script src="assets/js/calculator.js" defer></script>
 </body>
 </html>
