@@ -34,7 +34,21 @@
     return { w: w, h: h };
   }
 
-  // расталкивание слипшихся частиц пробки, чтобы она не схлопывалась в точку
+  // высота, на которой частица ложится поверх уже застрявших — пробка растёт куполом
+  function restY(p, list, floorY) {
+    var y = floorY - p.r;
+    for (var i = 0; i < list.length; i++) {
+      var q = list[i];
+      if (q === p) continue;
+      var dx = p.x - q.x, minD = p.r + q.r;
+      if (Math.abs(dx) >= minD) continue;
+      var top = q.y - Math.sqrt(minD * minD - dx * dx);
+      if (top < y) y = top;
+    }
+    return y;
+  }
+
+  // мягкое расталкивание пробки, чтобы частицы не схлопывались в одну точку
   function separate(list, floorY) {
     for (var i = 0; i < list.length; i++) {
       var a = list[i];
@@ -47,7 +61,7 @@
         var d = Math.sqrt(d2) || 0.001;
         // если центры совпали — расходимся по горизонтали
         if (d < 0.05) { dx = (Math.random() - 0.5) || 0.5; dy = -0.5; d = 1; }
-        var push = (minD - d) / d * 0.5;
+        var push = (minD - d) / d * 0.4;
         a.x += dx * push; a.y += dy * push;
         b.x -= dx * push; b.y -= dy * push;
       }
@@ -82,7 +96,8 @@
       S.boxW = wide ? W * 0.46 : W;
       S.cx = S.boxX + S.boxW * (wide ? 0.44 : 0.5);
       S.rockTop = Math.round(H * (wide ? 0.40 : 0.46));
-      S.chW = clamp(S.boxW * 0.05, 11, 26);
+      // канал заведомо уже крупной фракции (Ø 18–26 px) и шире ультрадисперсной
+      S.chW = clamp(S.boxW * 0.035, 10, 18);
       S.depth = H - S.rockTop;
 
       grain = [];
@@ -96,10 +111,10 @@
 
     function spawnCoarse() {
       return {
-        x: rnd(S.cx - S.boxW * 0.22, S.cx + S.boxW * 0.22),
-        y: rnd(-S.rockTop * 1.6, S.rockTop - 40),
+        x: rnd(S.cx - S.boxW * 0.16, S.cx + S.boxW * 0.16),
+        y: rnd(-240, S.rockTop - 80),
         r: rnd(9, 13),
-        vy: rnd(0.55, 1.15),
+        vy: rnd(0.9, 1.8),
         stuck: false
       };
     }
@@ -117,32 +132,40 @@
 
     function seed() {
       coarse = []; fine = [];
-      var nc = clamp(Math.round(S.boxW / 34), 10, 26);
+      var nc = clamp(Math.round(S.boxW / 42), 9, 16);
       var nf = clamp(Math.round(S.boxW / 3), 90, 260);
-      for (var i = 0; i < nc; i++) coarse.push(spawnCoarse());
+      for (var i = 0; i < nc; i++) coarse.push(spawnCoarse(false));
       for (var j = 0; j < nf; j++) fine.push(spawnFine(true));
     }
 
     layout(); seed();
 
     // доля заполнения трещины экраном: растёт после короткой задержки
+    var FILL_MAX = 0.72;
     function fillLevel(now) {
-      if (reduce) return 0.9;
-      return 0.9 * easeOut(clamp((now - t0 - 700) / 3800, 0, 1));
+      if (reduce) return FILL_MAX;
+      return FILL_MAX * easeOut(clamp((now - t0 - 900) / 4600, 0, 1));
     }
 
-    function step(intro) {
+    function step() {
       var i, p;
 
       // --- крупные частицы: сходятся к устью и образуют пробку ---
+      var plug = coarse.filter(function (c) { return c.stuck; });
       for (i = 0; i < coarse.length; i++) {
         p = coarse[i];
-        if (p.stuck) continue;
+        if (p.stuck) {
+          // осадка пробки: частица опускается, если под ней освободилось место
+          var down = restY(p, plug, S.rockTop);
+          if (p.y < down - 0.3) p.y = Math.min(down, p.y + 0.7);
+          continue;
+        }
         p.y += p.vy;
-        p.x += (S.cx - p.x) * 0.012;
-        if (p.y + p.r >= S.rockTop) { p.y = S.rockTop - p.r; p.stuck = true; }
+        p.x += (S.cx - p.x) * 0.022;
+        var rest = restY(p, plug, S.rockTop);
+        if (p.y >= rest) { p.y = rest; p.stuck = true; }
       }
-      separate(coarse.filter(function (c) { return c.stuck; }), S.rockTop);
+      separate(plug, S.rockTop);
 
       // --- мелкие частицы: воронка в канал и спуск на всю глубину ---
       for (i = 0; i < fine.length; i++) {
@@ -160,7 +183,6 @@
         }
         if (p.y - p.r > H) fine[i] = spawnFine(false);
       }
-      return intro;
     }
 
     function render(now) {
@@ -231,10 +253,10 @@
       // крупные частицы — пробка на устье
       for (i = 0; i < coarse.length; i++) {
         p = coarse[i];
-        ctx.globalAlpha = 0.92 * intro;
+        ctx.globalAlpha = 0.92 * intro * p.fade;
         ctx.fillStyle = col.muted;
         ctx.beginPath(); ctx.arc(p.x, p.y - lift, p.r, 0, Math.PI * 2); ctx.fill();
-        ctx.globalAlpha = 0.45 * intro;
+        ctx.globalAlpha = 0.45 * intro * p.fade;
         ctx.lineWidth = 1; ctx.strokeStyle = col.paper;
         ctx.stroke();
       }
@@ -244,7 +266,7 @@
     function staticFrame() {
       // финальный кадр: пробка на устье + заполненный экран в трещине
       var guard = 0;
-      while (coarse.some(function (c) { return !c.stuck; }) && guard++ < 4000) step(1);
+      while (coarse.some(function (c) { return !c.stuck; }) && guard++ < 4000) step();
       for (var i = 0; i < fine.length; i++) {
         var p = fine[i];
         p.inside = true; p.x = p.tx;
@@ -312,14 +334,19 @@
       var size = fit(canvas, ctx);
       W = size.w; H = size.h;
       S.cx = W * 0.5;
-      S.chW = clamp(W * 0.028, 11, 16);
-      S.rockTop = Math.round(H * 0.34);
+      S.chW = clamp(W * 0.026, 11, 15);
+      S.rockTop = Math.round(H * 0.30);
       S.depth = H - S.rockTop;
+      // порог прохода в канал; шкала помола подобрана так, чтобы фракция
+      // начинала проходить примерно на середине ползунка
+      S.thr = S.chW / 2 - 0.8;
+      S.rMax = S.thr * 1.57;
+      S.rMin = S.thr * 0.43;
     }
 
     // радиус частицы при текущем помоле; jitter даёт разброс фракции
-    function radius(p) { return (9.2 - t * 7.8) * p.j; }
-    function passes(p) { return radius(p) <= S.chW / 2 - 0.8; }
+    function radius(p) { return (S.rMax - t * (S.rMax - S.rMin)) * p.j; }
+    function passes(p) { return radius(p) <= S.thr; }
 
     function spawn(above) {
       return {
@@ -327,6 +354,7 @@
         y: above ? rnd(-S.rockTop, S.rockTop - 6) : rnd(-70, -6),
         vy: rnd(0.8, 1.7),
         j: rnd(0.84, 1.16),
+        r: 0,
         tx: S.cx + rnd(-S.chW * 0.3, S.chW * 0.3),
         stuck: false,
         inside: false
@@ -349,10 +377,18 @@
 
     function step() {
       var i, p, r;
-      for (i = 0; i < parts.length; i++) {
-        p = parts[i]; r = radius(p);
+      var plug = parts.filter(function (q) { return q.stuck; });
+      plug.forEach(function (q) { q.r = radius(q); });
 
-        if (p.stuck) continue;
+      for (i = 0; i < parts.length; i++) {
+        p = parts[i]; r = radius(p); p.r = r;
+
+        if (p.stuck) {
+          // осадка пробки, когда фракция мельчает и соседи уходят в канал
+          var down = restY(p, plug, S.rockTop);
+          if (p.y < down - 0.3) p.y = Math.min(down, p.y + 0.7);
+          continue;
+        }
 
         if (p.inside) {
           p.y += p.vy * 0.85;
@@ -365,13 +401,16 @@
         var d = S.rockTop - p.y;
         if (d < 70) p.x += (p.tx - p.x) * clamp((70 - d) / 70, 0, 1) * 0.18;
 
-        if (p.y + r >= S.rockTop) {
-          if (passes(p)) { p.inside = true; p.x = p.tx; p.y = S.rockTop + r; }
-          else { p.y = S.rockTop - r; p.stuck = true; }   // слишком крупная — пробка
+        if (passes(p)) {
+          if (p.y + r >= S.rockTop) { p.inside = true; p.x = p.tx; p.y = S.rockTop + r; }
+        } else {
+          // слишком крупная — ложится в пробку поверх уже осевших
+          var rest = restY(p, plug, S.rockTop);
+          if (p.y >= rest) { p.y = rest; p.stuck = true; }
         }
       }
 
-      separate(parts.filter(function (q) { return q.stuck; }), S.rockTop);
+      separate(plug, S.rockTop);
 
       // экран растёт ровно настолько, насколько фракция проходит в канал
       var target = 0.92 * passFraction();
