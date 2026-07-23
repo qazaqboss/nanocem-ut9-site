@@ -431,7 +431,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* сводка по фонду */
 .summary {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
   background: var(--line); border: 1px solid var(--line); margin-bottom: 2rem;
 }
 .summary__cell { background: var(--paper); padding: 1.2rem 1.4rem; display: flex; flex-direction: column; gap: 0.4rem; }
