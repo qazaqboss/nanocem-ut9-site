@@ -493,7 +493,7 @@ input[type="range"]::-moz-range-thumb {
 .reqs dd { margin: 0; }
 .reqs a { color: var(--accent); text-decoration: none; }
 .reqs a:hover { text-decoration: underline; }
-.contacts__cta { display: flex; justify-content: flex-start; }
+.contacts__cta { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 0.8rem; }
 
 /* ---------- Футер ---------- */
 .footer { background: var(--ink); color: var(--paper); padding: clamp(2.4rem, 5vw, 3.6rem) 0 2rem; }
@@ -581,6 +581,7 @@ input[type="range"]::-moz-range-thumb {
   /* --- Контакты / футер стек --- */
   .steps { grid-template-columns: 1fr; }
   .oil__scheme { max-width: none; }
+  .contacts__cta { flex-direction: column; }
   .contacts__cta .btn { width: 100%; justify-content: center; }
   .footer__inner { flex-direction: column; align-items: flex-start; gap: 1.6rem; }
   .footer__links { gap: 0.8rem 1.2rem; }
