@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>NanoCem UT-9 — презентация</title>
+<!-- Исходник NanoCem-UT9-presentation.pdf. Сборка: presentation/build-pdf.js -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+@page { size: 297mm 210mm; margin: 0; }
+:root {
+  --ink: #1A1C1A; --paper: #F5F6F3; --paper-2: #ECEEEA; --line: #D6D9D3;
+  --accent: #6E7F6A; --muted: #8A8F88; --text: #3c403b;
+  --f-display: 'Space Grotesk', system-ui, sans-serif;
+  --f-body: 'Inter', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { background: #888; font: 400 13px/1.5 var(--f-body); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+@media screen { .slide { margin: 0 auto 16px; } }
+
+.slide {
+  width: 297mm; height: 210mm; position: relative; overflow: hidden;
+  background: var(--paper); padding: 52px 60px 0;
+  display: flex; flex-direction: column;
+  page-break-after: always; break-after: page;
+}
+.slide:last-child { page-break-after: auto; break-after: auto; }
+.slide--alt { background: var(--paper-2); }
+.slide--dark { background: var(--ink); color: var(--paper); }
+
+.mark { width: 14px; height: 14px; flex: none; color: var(--ink); }
+.slide--dark .mark { color: var(--paper); }
+
+.eyebrow { display: flex; align-items: center; gap: 10px; font: 500 9.5px/1 var(--f-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.top { display: flex; justify-content: space-between; align-items: center; }
+.top .aside { font: 400 8.5px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h2 { font: 500 31px/1.1 var(--f-display); letter-spacing: -.01em; margin: 26px 0 0; }
+.sub { font: 400 13px/1.45 var(--f-body); color: var(--text); margin: 10px 0 0; max-width: 72ch; }
+
+.foot { position: absolute; left: 60px; right: 60px; bottom: 34px; display: flex; justify-content: space-between; align-items: center; font: 400 8.5px/1 var(--f-mono); letter-spacing: .08em; color: var(--muted); }
+.foot span { display: inline-flex; align-items: center; gap: 8px; }
+.foot .mark { width: 11px; height: 11px; }
+
+/* обложка */
+.cover { padding: 0; }
+.cover__frame { position: absolute; inset: 31px; border: 1px solid #2c302b; padding: 34px 30px 0; display: flex; flex-direction: column; }
+.cover__brand { display: flex; align-items: center; gap: 14px; }
+.cover__brand .mark { width: 30px; height: 30px; }
+.cover__brand b { font: 700 18px/1 var(--f-display); letter-spacing: .14em; }
+.cover__brand i { font: 400 9.5px/1 var(--f-mono); font-style: normal; letter-spacing: .14em; color: var(--muted); }
+.cover__kicker { margin-top: 112px; font: 500 9.5px/1 var(--f-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.cover h1 { font: 700 84px/1 var(--f-display); letter-spacing: -.015em; margin: 34px 0 0; }
+.cover__lede { font: 400 19px/1.4 var(--f-body); margin: 26px 0 0; max-width: 360px; }
+.cover__stats { display: flex; gap: 40px; margin-top: 34px; }
+.cover__stats div { border-left: 1px solid var(--accent); padding-left: 16px; }
+.cover__stats small { display: block; font: 400 8px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.cover__stats b { display: block; margin-top: 10px; font: 500 17px/1 var(--f-mono); }
+.cover .foot { left: 30px; right: 30px; bottom: 14px; }
+
+/* кто мы */
+.about { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: auto; margin-bottom: 140px; }
+.about__main p:first-child { font: 400 13.5px/1.45 var(--f-body); margin: 0 0 12px; }
+.about__main p { font-size: 10.5px; color: var(--text); margin: 0; }
+.bullets { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; font-size: 10.5px; color: var(--text); }
+.bullets li { position: relative; padding-left: 18px; }
+.bullets li::before { content: ""; position: absolute; left: 1px; top: 4px; width: 6px; height: 6px; border: 1px solid var(--ink); transform: rotate(45deg); }
+.bullets b { color: var(--ink); font-weight: 600; }
+
+/* продукт */
+.lede-strong { font: 600 12.5px/1.45 var(--f-body); margin: 12px 0 0; }
+.lede-strong + .sub { font-size: 10.5px; margin-top: 6px; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); margin-top: auto; margin-bottom: 98px; }
+.cards article { padding: 16px 14px 18px; border-left: 1px solid var(--line); }
+.cards article:first-child { border-left: 0; }
+.cards svg { width: 20px; height: 20px; fill: none; stroke: var(--ink); stroke-width: 1.4; }
+.cards h3 { font: 500 12px/1.2 var(--f-display); margin: 14px 0 6px; }
+.cards p { font-size: 9.5px; color: var(--text); margin: 0; }
+
+/* принцип */
+.principle { display: grid; grid-template-columns: 1fr 1.02fr; gap: 34px; align-items: center; margin-top: auto; margin-bottom: auto; }
+.principle p { font-size: 12.5px; color: var(--text); margin: 0 0 12px; }
+.scale small { display: block; font: 400 8.5px/1.2 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-top: 12px; }
+.scale b { font: 500 13px/1.3 var(--f-mono); }
+.demo { border: 1px solid var(--line); background: var(--paper-2); padding: 14px 14px 10px; }
+.demo svg { display: block; width: 100%; }
+.demo figcaption { font: 400 7.5px/1 var(--f-mono); letter-spacing: .02em; color: var(--muted); text-align: center; margin-top: 10px; }
+
+/* в пласте */
+.plast { display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 16px; margin: auto 0; padding-bottom: 40px; align-items: center; }
+.plast figure { margin: 0; border: 1px solid var(--line); background: #fbfbf9; }
+.plast figure img { display: block; width: 100%; }
+.plast figcaption { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding: 7px 10px; font: 400 8px/1.3 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.plast figcaption b { color: var(--ink); font-weight: 500; }
+.phases { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
+.phases li { display: grid; grid-template-columns: 22px 1fr; gap: 6px; padding: 6.5px 0 7px; border-bottom: 1px solid var(--line); }
+.phases li > span { font: 400 8.5px/1.5 var(--f-mono); color: var(--muted); }
+.phases b { display: block; font: 500 10.5px/1.3 var(--f-display); }
+.phases p { margin: 2px 0 0; font-size: 9px; line-height: 1.4; color: var(--text); }
+.phases li.key > span { color: var(--accent); }
+.plast__note { font: 400 8px/1.4 var(--f-mono); letter-spacing: .04em; color: var(--muted); margin: 10px 0 0; }
+
+/* применение */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); margin-top: 16px; }
+.grid2 > div { display: grid; grid-template-columns: 20px 1fr; padding: 10px 12px 11px; border-top: 1px solid var(--line); }
+.grid2 > div:nth-child(-n+2) { border-top: 0; }
+.grid2 > div:nth-child(even) { border-left: 1px solid var(--line); }
+.grid2 span { font: 400 8px/1.5 var(--f-mono); color: var(--muted); }
+.grid2 small { display: block; font: 400 7.5px/1.3 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.grid2 p { margin: 2px 0 0; font-size: 10.5px; }
+
+/* характеристики */
+.specs { display: grid; grid-template-columns: 1fr 1fr; gap: 0 26px; margin-top: 16px; }
+.specs table { width: 100%; border-collapse: collapse; font-size: 9.5px; }
+.specs td { padding: 5.5px 4px; border-bottom: 1px solid var(--line); }
+.specs td:last-child { text-align: right; font: 400 9px/1.3 var(--f-mono); }
+.small-note { font: 400 8px/1 var(--f-mono); letter-spacing: .04em; color: var(--muted); position: absolute; left: 60px; bottom: 64px; margin: 0; }
+
+/* технология */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); margin-top: auto; margin-bottom: 104px; }
+.steps > div { display: grid; grid-template-columns: 22px 1fr; padding: 12px 12px 16px; border-left: 1px solid var(--line); }
+.steps > div:nth-child(3n+1) { border-left: 0; }
+.steps > div:nth-child(n+4) { border-top: 1px solid var(--line); }
+.steps span { font: 400 8.5px/1.6 var(--f-mono); color: var(--muted); }
+.steps b { display: block; font: 500 11px/1.3 var(--f-display); }
+.steps p { margin: 4px 0 0; font-size: 9px; color: var(--text); }
+
+/* результаты */
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); margin-top: 14px; }
+.kpis > div { padding: 10px 12px 9px; border-left: 1px solid var(--line); }
+.kpis > div:first-child { border-left: 0; }
+.kpis b { display: block; font: 400 20px/1 var(--f-mono); color: var(--accent); }
+.kpis small { display: block; margin-top: 8px; font: 400 7.5px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.res { width: 100%; border-collapse: collapse; margin-top: 12px; }
+.res th { font: 400 7.5px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: right; padding: 6px 4px; border-bottom: 1px solid var(--line); }
+.res td { font: 400 10px/1 var(--f-mono); color: var(--text); text-align: right; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+.res th:first-child, .res td:first-child { text-align: left; }
+.res td:first-child { font-weight: 500; font-size: 11px; color: var(--ink); }
+
+/* контакты */
+.rule { width: 42px; height: 1px; background: var(--accent); margin-top: 14px; }
+.contacts { margin-top: 26px; width: 290px; }
+.contacts div { display: grid; grid-template-columns: 90px 1fr; padding: 7px 0; border-bottom: 1px solid #2c302b; }
+.contacts dt { font: 400 7.5px/1.6 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.contacts dd { margin: 0; font-size: 10.5px; }
+.contacts dd.mut { color: var(--muted); }
+.sign { position: absolute; right: 60px; bottom: 58px; text-align: left; }
+.sign .mark { width: 38px; height: 38px; }
+.sign b { display: block; margin-top: 10px; font: 700 15px/1 var(--f-display); letter-spacing: .14em; }
+.sign small { display: block; margin-top: 6px; font: 400 7.5px/1 var(--f-mono); letter-spacing: .06em; color: var(--muted); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="diamond" viewBox="0 0 40 40">
+    <g transform="translate(20 20)">
+      <rect x="-15" y="-15" width="30" height="30" transform="rotate(45)" fill="none" stroke="currentColor" stroke-width="2"/>
+      <rect x="-7.5" y="-7.5" width="15" height="15" transform="rotate(45)" fill="none" stroke="#6E7F6A" stroke-width="2"/>
+      <line x1="0" y1="-5" x2="0" y2="5" stroke="#6E7F6A" stroke-width="2"/>
+    </g>
+  </symbol>
+</svg>
+
+<!-- Обложка -->
+<section class="slide slide--dark cover">
+  <div class="cover__frame">
+    <div class="cover__brand"><svg class="mark"><use href="#diamond"/></svg><b>EASYMIX</b><i>◇&nbsp; ТОО «ЭКОМИКС» · АКТОБЕ</i></div>
+    <p class="cover__kicker">Ультратонкая изоляционно-инъекционная сухая смесь</p>
+    <h1>NanoCem UT-9</h1>
+    <p class="cover__lede">Отсекает водопритоки в нефтяных скважинах: проникает в микротрещины и твердеет в прочный водонепроницаемый камень.</p>
+    <div class="cover__stats">
+      <div><small>Тонкость помола</small><b>D95 ≤ 9 мкм</b></div>
+      <div><small>Прочность · 28 сут</small><b>65–75 МПа</b></div>
+      <div><small>Водонепроницаемость</small><b>W14–W16</b></div>
+    </div>
+    <div class="foot"><span>Презентация продукта · 2026</span><span>nanocem.vercel.app</span></div>
+  </div>
+</section>
+
+<!-- 01 О компании -->
+<section class="slide">
+  <div class="top"><p class="eyebrow"><svg class="mark"><use href="#diamond"/></svg>01 / О компании</p><span class="aside">EASYMIX · Актобе</span></div>
+  <h2>Кто мы</h2>
+  <div class="about">
+    <div class="about__main">
+      <p>ТОО «ЭкоМикс» — производственная компания из Казахстана, г. Актобе. Под брендом <b>EASYMIX</b> выпускает <b>NanoCem UT-9</b>.</p>
+      <p>Продукция производится по ТУ 5745-001-171140033124-2025. Основное направление — ремонтно-изоляционные работы в нефтяных скважинах: отсечение водопритоков, изоляция интервалов и восстановление продуктивности осложнённого фонда.</p>
+    </div>
+    <ul class="bullets">
+      <li><b>Специализация.</b> Ультратонкие изоляционно-инъекционные сухие смеси для нефтедобычи.</li>
+      <li><b>Стандарт.</b> Выпуск по техническим условиям ТУ, стабильные характеристики от партии к партии.</li>
+      <li><b>Результат.</b> Кратное снижение обводнённости и возврат скважин в рабочий фонд.</li>
+      <li><b>Стойкость.</b> Работа в агрессивных средах: нефть, солевые растворы, сульфаты.</li>
+    </ul>
+  </div>
+  <div class="foot"><span><svg class="mark"><use href="#diamond"/></svg>EASYMIX · NanoCem UT-9</span><span>02</span></div>
+</section>
+
+<!-- 02 Продукт -->
+<section class="slide slide--alt">
+  <p class="eyebrow"><svg class="mark"><use href="#diamond"/></svg>02 / Продукт</p>
+  <h2>Что это</h2>
+  <p class="lede-strong">NanoCem UT-9 — ультратонкая изоляционно-инъекционная сухая смесь для цементажа под давлением.</p>
+  <p class="sub">Главное отличие от обычных цементов — тонкость помола: D95 ≤ 9 мкм, D50 ~3,5 мкм. Подавляющая часть частиц мельче 9 микрон, поэтому смесь проникает туда, где стандартный цемент физически не проходит, — в микротрещины, низкопроницаемые коллекторы (0,01–1 мД), тонкие каналы фильтрации.</p>
+  <div class="cards">
+    <article>
+      <svg viewBox="0 0 20 20"><path d="M2 5h16M2 10h7M13 10h5M2 15h16"/><circle cx="11" cy="10" r="1.2" fill="#6E7F6A" stroke="none"/></svg>
+      <h3>Проникновение</h3><p>Частицы мельче 9 мкм входят<br>в микротрещины.</p>
+    </article>
+    <article>
+      <svg viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14"/><path d="M6 14 10 6l4 8Z" fill="#6E7F6A" stroke="none"/></svg>
+      <h3>Прочность</h3><p>После твердения марка М500, 65–75 МПа за 28 суток.</p>
+    </article>
+    <article>
+      <svg viewBox="0 0 20 20"><path d="M10 2 17 5v5c0 4-3 7-7 8-4-1-7-4-7-8V5Z"/><path d="m7 10 2 2 4-4" stroke="#6E7F6A" stroke-width="1.8"/></svg>
+      <h3>Стойкость</h3><p>Устойчив к нефти, солевым растворам<br>и сульфатам.</p>
+    </article>
+  </div>
+  <div class="foot"><span><svg class="mark"><use href="#diamond"/></svg>EASYMIX · NanoCem UT-9</span><span>03</span></div>
+</section>
+
+<!-- 03 Принцип -->
+<section class="slide">
+  <p class="eyebrow"><svg class="mark"><use href="#diamond"/></svg>03 / Принцип</p>
+  <h2>Почему тонкость помола решает</h2>
+  <div class="principle">
+    <div>
+      <p>Обычная цементная суспензия в тонкие каналы не входит: частицы слишком крупные и кольматируют устье трещины, не заполняя её.</p>
+      <p>Ультратонкая смесь проникает в глубину и образует сплошной водонепроницаемый экран, а после твердения работает как конструкционный камень — сочетая проникающую способность инъекционных растворов с прочностью цемента.</p>
+      <div class="scale">
+        <small>Обычный цемент</small><b>~40–80 мкм · пробка на устье</b>
+        <small>NanoCem UT-9</small><b>D95 ≤ 9 мкм · сквозное проникновение</b>
+      </div>
+    </div>
+    <figure class="demo">
+      <svg viewBox="0 0 516 354">
+        <rect width="516" height="354" fill="#1A1C1A"/>
+        <rect y="150" width="516" height="204" fill="#262826"/>
+        <line x1="0" y1="150" x2="516" y2="150" stroke="#5a5f59"/>
+        <rect x="247" y="150" width="22" height="204" fill="#3c4a3b"/>
+        <g fill="#8A8F88"><circle cx="216" cy="122" r="14"/><circle cx="257" cy="108" r="16"/><circle cx="298" cy="125" r="14"/><circle cx="238" cy="131" r="17"/><circle cx="276" cy="131" r="16"/></g>
+        <g fill="#6E7F6A"><circle cx="176" cy="55" r="3"/><circle cx="203" cy="82" r="3"/><circle cx="318" cy="76" r="3"/><circle cx="346" cy="58" r="3"/>
+          <circle cx="258" cy="177" r="3"/><circle cx="255" cy="218" r="3"/><circle cx="260" cy="259" r="3"/><circle cx="256" cy="299" r="3"/><circle cx="259" cy="337" r="3"/></g>
+      </svg>
+      <figcaption>Крупные частицы образуют пробку на устье · ультратонкие проходят сквозь канал</figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span><svg class="mark"><use href="#diamond"/></svg>EASYMIX · NanoCem UT-9</span><span>04</span></div>
+</section>
+
+<!-- 04 В пласте -->
+<section class="slide slide--alt">
+  <div class="top"><p class="eyebrow"><svg class="mark"><use href="#diamond"/></svg>04 / В пласте</p><span class="aside">Заход с АПРС-40 · разрез скважины</span></div>
+  <h2>Как UT-9 работает в пласте</h2>
+  <div class="plast">
+    <figure>
+      <img src="img/plast-squeeze.jpg" alt="Смесь UT-9 под пакером заполняет перфорации, заколонный канал и микротрещины">
+      <figcaption><b>Проникновение</b><span>перфорации · канал · микротрещины</span></figcaption>
+    </figure>
+    <figure>
+      <img src="img/plast-result.jpg" alt="После ОЗЦ и новой перфорации из пласта идёт нефть, вода отсечена цементным камнем">
+      <figcaption><b>Результат</b><span>нефть идёт · вода отсечена</span></figcaption>
+    </figure>
+    <div>
+      <ol class="phases">
+        <li><span>01</span><div><b>До ремонта</b><p>Вода идёт по заколонному каналу в перфорации.</p></div></li>
+        <li><span>02</span><div><b>Затворение</b><p>Сухая смесь затворяется водой в ёмкости.</p></div></li>
+        <li><span>03</span><div><b>Закачка по НКТ</b><p>Агрегат подаёт смесь в НКТ, интервал изолирован пакером.</p></div></li>
+        <li class="key"><span>04</span><div><b>Проникновение</b><p>Смесь заполняет перфорации, заколонный канал и микротрещины.</p></div></li>
+        <li><span>05</span><div><b>ОЗЦ · опрессовка</b><p>Закачка остановлена, давление выдерживается 25–35 атм.</p></div></li>
+        <li><span>06</span><div><b>Перфорация пласта</b><p>Перфоратор простреливает всю нефтенасыщенную толщину.</p></div></li>
+        <li class="key"><span>07</span><div><b>Чистая нефть</b><p>Заколонные перетоки и водоносный пласт закрыты цементным камнем.</p></div></li>
+      </ol>
+      <p class="plast__note">Анимация всех этапов: nanocem.vercel.app/#reservoir</p>
+    </div>
+  </div>
+  <div class="foot"><span><svg class="mark"><use href="#diamond"/></svg>EASYMIX · NanoCem UT-9</span><span>05</span></div>
+</section>
+
+<!-- 05 Применение -->
+<section class="slide">
+  <p class="eyebrow"><svg class="mark"><use href="#diamond"/></svg>05 / Применение</p>
+  <h2>Ремонтно-изоляционные работы</h2>
+  <p class="sub">Проникнуть в каналы поступления воды, отсечь их и закрепить — не выключая из работы нефтенасыщенную часть пласта.</p>
+  <div class="grid2">
+    <div><span>01</span><div><small>Основная задача</small><p>Ликвидация водопритоков в эксплуатационных скважинах</p></div></div>
+    <div><span>02</span><div><small>Разобщение пластов</small><p>Изоляция заколонных перетоков</p></div></div>
+    <div><span>03</span><div><small>Ремонт крепи</small><p>Восстановление герметичности цементного кольца</p></div></div>
+    <div><span>04</span><div><small>Бурение и КРС</small><p>Герметизация зон потери циркуляции</p></div></div>
+    <div><span>05</span><div><small>Призабойная зона</small><p>Укрепление слабосцементированных коллекторов</p></div></div>
+    <div><span>06</span><div><small>Низкая проницаемость</small><p>Инъекция в интервалы с микротрещинами</p></div></div>
+    <div><span>07</span><div><small>Селективная изоляция</small><p>Отсечение отдельных интервалов и пластов</p></div></div>
+    <div><span>08</span><div><small>Консервация и ликвидация</small><p>Цементаж под давлением, изоляционные мосты</p></div></div>
+  </div>
+  <div class="foot"><span><svg class="mark"><use href="#diamond"/></svg>EASYMIX · NanoCem UT-9</span><span>06</span></div>
+</section>
+
+<!-- 06 Характеристики -->
+<section class="slide slide--alt">
+  <div class="top"><p class="eyebrow"><svg class="mark"><use href="#diamond"/></svg>06 / Характеристики</p><span class="aside">ТУ 5745-001-171140033124-2025</span></div>
+  <h2>Технические характеристики</h2>
+  <div class="specs">
+    <table>
+      <tr><td>Внешний вид</td><td>Порошок серого цвета</td></tr>
+      <tr><td>D50</td><td>~3,5 мкм</td></tr>
+      <tr><td>D95</td><td>≤ 9 мкм</td></tr>
+      <tr><td>Плотность сухого продукта</td><td>2,95 г/см³</td></tr>
+      <tr><td>Плотность суспензии</td><td>1,85–1,95 г/см³</td></tr>
+      <tr><td>Водосодержание (В/Т)</td><td>0,55–0,80</td></tr>
+      <tr><td>Свободная вода</td><td>≤ 0,5%</td></tr>
+      <tr><td>Прочность через 24 ч</td><td>≥ 12 МПа</td></tr>
+      <tr><td>Прочность через 28 сут</td><td>65–75 МПа</td></tr>
+      <tr><td>Марка прочности</td><td>М500</td></tr>
+    </table>
+    <table>
+      <tr><td>Жизнеспособность раствора</td><td>4–5 часов</td></tr>
+      <tr><td>Время первичного твердения</td><td>~60 мин</td></tr>
+      <tr><td>Полное твердение</td><td>24 ч при +25 °C</td></tr>
+      <tr><td>Температурный диапазон</td><td>+5…+120 °C</td></tr>
+      <tr><td>Адгезия к бетону, не менее</td><td>≥ 2,5 МПа</td></tr>
+      <tr><td>Водонепроницаемость</td><td>W14–W16</td></tr>
+      <tr><td>Морозостойкость</td><td>F75–F100</td></tr>
+      <tr><td>Химическая стойкость</td><td>нефть, соли, сульфаты</td></tr>
+      <tr><td>Толщина слоя</td><td>5–100 мм</td></tr>
+      <tr><td>Упаковка</td><td>мешки 25 кг · биг-бэги 1000 кг</td></tr>
+    </table>
+  </div>
+  <p class="small-note">Гарантийный срок хранения — 12 месяцев со дня изготовления.</p>
+  <div class="foot"><span><svg class="mark"><use href="#diamond"/></svg>EASYMIX · NanoCem UT-9</span><span>07</span></div>
+</section>
+
+<!-- 07 Технология -->
+<section class="slide">
+  <p class="eyebrow"><svg class="mark"><use href="#diamond"/></svg>07 / Технология</p>
+  <h2>Как проводятся работы</h2>
+  <div class="steps">
+    <div><span>01</span><div><b>Обследование</b><p>Определение источника обводнения по промыслово-геофизическим исследованиям, расчёт объёма закачки.</p></div></div>
+    <div><span>02</span><div><b>Подготовка ствола</b><p>Промывка и шаблонирование, спуск НКТ, установка пакера на границе интервала.</p></div></div>
+    <div><span>03</span><div><b>Приготовление раствора</b><p>Затворение на пресной воде при В/Т 0,55–0,80, контроль плотности 1,85–1,95 г/см³.</p></div></div>
+    <div><span>04</span><div><b>Закачка под давлением</b><p>Продавка расчётного объёма, проникновение смеси в каналы фильтрации на всю глубину.</p></div></div>
+    <div><span>05</span><div><b>Технологическая выдержка</b><p>Первичное твердение ~60 мин, полное — 24 ч при +25 °C. Через 28 сут — 65–75 МПа.</p></div></div>
+    <div><span>06</span><div><b>Освоение и контроль</b><p>Разбуривание, опрессовка, вывод на режим, контроль дебита по нефти и обводнённости.</p></div></div>
+  </div>
+  <div class="foot"><span><svg class="mark"><use href="#diamond"/></svg>EASYMIX · NanoCem UT-9</span><span>08</span></div>
+</section>
+
+<!-- 08 Результаты -->
+<section class="slide">
+  <div class="top"><p class="eyebrow"><svg class="mark"><use href="#diamond"/></svg>08 / Результаты</p><span class="aside">01.01–17.07.2026 · план–факт</span></div>
+  <h2>Результаты работ</h2>
+  <p class="sub">Ремонтно-изоляционные работы выполнены на четырёх скважинах нефтяного фонда. На всех получено кратное снижение обводнённости и восстановление добычи по нефти.</p>
+  <div class="kpis">
+    <div><b>4</b><small>Скважины в работе</small></div>
+    <div><b>65,0</b><small>м³/сут жидкости</small></div>
+    <div><b>37,73</b><small>т/сут нефти</small></div>
+  </div>
+  <table class="res">
+    <tr><th>Скважина</th><th>Обводнённость до</th><th>После</th><th>Нефть до, т/сут</th><th>После, т/сут</th></tr>
+    <tr><td>X-1</td><td>94,8%</td><td>36,8%</td><td>0,58</td><td>10,41</td></tr>
+    <tr><td>X-2</td><td>88,4%</td><td>30,1%</td><td>1,20</td><td>9,76</td></tr>
+    <tr><td>X-3</td><td>85,2%</td><td>35,8%</td><td>2,71</td><td>13,70</td></tr>
+    <tr><td>X-4</td><td>98,4%</td><td>21,8%</td><td>0,12</td><td>2,33</td></tr>
+  </table>
+  <p class="plast__note">До — худший месяц перед ремонтом, после — среднее за июль 2026. Номера скважин обезличены.</p>
+  <div class="foot"><span><svg class="mark"><use href="#diamond"/></svg>EASYMIX · NanoCem UT-9</span><span>09</span></div>
+</section>
+
+<!-- 09 Контакты -->
+<section class="slide slide--dark">
+  <p class="eyebrow"><svg class="mark"><use href="#diamond"/></svg>09 / Контакты</p>
+  <h2>Связаться</h2>
+  <div class="rule"></div>
+  <p class="sub" style="color:var(--paper)">Запросите технический лист и коммерческое предложение под вашу задачу.</p>
+  <dl class="contacts">
+    <div><dt>Компания</dt><dd>ТОО «ЭкоМикс» (бренд EASYMIX)</dd></div>
+    <div><dt>Телефон</dt><dd class="mut">+7 701 111 19 64</dd></div>
+    <div><dt>E-mail</dt><dd class="mut">info@easymix.kz</dd></div>
+    <div><dt>Адрес</dt><dd>РК, г. Актобе, кв. Промзона, участок 679/17</dd></div>
+    <div><dt>БИН</dt><dd>171140033124</dd></div>
+    <div><dt>Сайт</dt><dd class="mut">nanocem.vercel.app</dd></div>
+  </dl>
+  <div class="sign"><svg class="mark"><use href="#diamond"/></svg><b>EASYMIX</b><small>NanoCem UT-9 · ультратонкая изоляционно-инъекционная сухая смесь</small></div>
+  <div class="foot"><span>© 2026 ТОО «ЭкоМикс». NanoCem UT-9.</span><span>ТУ 5745-001-171140033124-2025</span></div>
+</section>
+</body>
+</html>
