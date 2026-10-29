@@ -252,4 +252,13 @@
     }, 150);
   });
 
+  // высота iframe «В пласте» — по сообщению из plast.html
+  var resFrame = document.getElementById('reservoirFrame');
+  if (resFrame) {
+    window.addEventListener('message', function (e) {
+      if (e.source !== resFrame.contentWindow || !e.data || e.data.type !== 'plast-height') return;
+      resFrame.style.height = e.data.h + 'px';
+    });
+  }
+
 })();
