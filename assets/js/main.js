@@ -252,13 +252,32 @@
     }, 150);
   });
 
-  // высота iframe «В пласте» — по сообщению из plast.html
+  // iframe «В пласте»: высота и режим «на весь экран» — по сообщениям из plast.html
   var resFrame = document.getElementById('reservoirFrame');
   if (resFrame) {
+    var resBox = resFrame.parentNode;
+    var fsElement = function () { return document.fullscreenElement || document.webkitFullscreenElement; };
+    var setFs = function (on) {
+      if (on === resBox.classList.contains('is-fs')) return;
+      resBox.classList.toggle('is-fs', on);
+      document.documentElement.classList.toggle('reservoir-fs', on);
+      resFrame.contentWindow.postMessage({ type: 'plast-fs-state', on: on }, '*');
+      // системный fullscreen там, где он есть; на iPhone остаётся растянутый iframe
+      var req = resBox.requestFullscreen || resBox.webkitRequestFullscreen;
+      var exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (on && req) { var r = req.call(resBox); if (r && r.catch) r.catch(function () {}); }
+      if (!on && fsElement() && exit) { var x = exit.call(document); if (x && x.catch) x.catch(function () {}); }
+      if (on) resFrame.focus();
+    };
     window.addEventListener('message', function (e) {
-      if (e.source !== resFrame.contentWindow || !e.data || e.data.type !== 'plast-height') return;
-      resFrame.style.height = e.data.h + 'px';
+      if (e.source !== resFrame.contentWindow || !e.data) return;
+      if (e.data.type === 'plast-height') resFrame.style.height = e.data.h + 'px';
+      if (e.data.type === 'plast-fs') setFs(!!e.data.on);
     });
+    var onFsChange = function () { if (!fsElement()) setFs(false); };
+    document.addEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setFs(false); });
   }
 
 })();
