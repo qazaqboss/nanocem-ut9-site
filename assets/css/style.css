@@ -148,7 +148,7 @@ p { margin: 0 0 1.1em; }
 .nav__links { display: flex; gap: clamp(0.8rem, 2vw, 1.8rem); }
 .nav__links a {
   text-decoration: none; color: var(--paper);
-  font-family: var(--f-mono); font-size: 0.85rem; letter-spacing: 0.03em;
+  font-family: var(--f-mono); font-size: 0.85rem; letter-spacing: 0.03em; white-space: nowrap;
   padding: 0.3em 0; position: relative; transition: color .3s var(--ease);
 }
 .nav.scrolled .nav__links a { color: var(--ink); }
@@ -204,9 +204,9 @@ p { margin: 0 0 1.1em; }
 
 .hero__caption {
   position: absolute; left: 50%; bottom: 1.6rem; transform: translateX(-50%);
-  z-index: 2; margin: 0; width: 100%; max-width: var(--max); padding-inline: var(--pad);
+  z-index: 2; margin: 0; width: calc(100% - 2 * var(--pad)); max-width: var(--max);
   font-family: var(--f-mono); font-size: 0.8rem; letter-spacing: 0.04em; color: var(--muted);
-  text-align: center;
+  text-align: left;
 }
 
 /* ---------- Продукт ---------- */
@@ -269,7 +269,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ---------- Решения ---------- */
-.solutions { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.solutions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
 .sol { background: var(--paper); }
 .sol__head {
   width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.2rem;
@@ -283,7 +283,7 @@ input[type="range"]::-moz-range-thumb {
   display: block; font-family: var(--f-mono); font-size: 0.74rem; text-transform: uppercase;
   letter-spacing: 0.14em; color: var(--muted); margin-bottom: 0.25em;
 }
-.sol__title { font-family: var(--f-display); font-weight: 500; font-size: clamp(1.15rem, 2vw, 1.5rem); }
+.sol__title { font-family: var(--f-display); font-weight: 500; font-size: clamp(1.15rem, 2vw, 1.5rem); overflow-wrap: break-word; hyphens: auto; }
 .sol__arrow { width: 14px; height: 14px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink);
   transform: rotate(45deg); transition: transform .3s var(--ease); flex: none; }
 .sol[aria-expanded="true"] .sol__arrow,
@@ -530,7 +530,27 @@ input[type="range"]::-moz-range-thumb {
   .oil__intro { grid-template-columns: 1fr; }
   .oil__scheme { max-width: 460px; }
   .steps { grid-template-columns: repeat(2, 1fr); }
-  .summary { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* до 1100px не помещается подпись продукта рядом с шестью пунктами меню */
+@media (max-width: 1099px) {
+  .nav__product, .nav__sep { display: none; }
+}
+
+/* пока сцена частиц не уходит вправо (< 900px, см. particles.js), она идёт
+   отдельной полосой под текстом, а не фоном за ним */
+@media (max-width: 899px) {
+  .hero { padding-bottom: 2.4rem; }
+  .hero__caption {
+    position: static; transform: none; text-align: left;
+    width: auto; max-width: none; padding-inline: 0;
+    margin-top: 2.2rem;
+  }
+  .hero__canvas {
+    position: relative; inset: auto; order: 1;
+    width: calc(100% + 2 * var(--pad)); max-width: none; flex: 1 0 34svh; min-height: 220px;
+    margin: 1.8rem calc(-1 * var(--pad)) -2.4rem;
+  }
 }
 
 @media (max-width: 767px) {
@@ -547,7 +567,6 @@ input[type="range"]::-moz-range-thumb {
   .nav__burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--ink); }
   .nav__burger.open span:nth-child(2) { opacity: 0; }
   .nav__burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--ink); }
-  .nav__product { display: none; }
 
   .product__cards { grid-template-columns: 1fr; }
 
@@ -562,6 +581,19 @@ input[type="range"]::-moz-range-thumb {
   .stat { align-items: flex-start; }
   .reqs > div { grid-template-columns: 1fr; gap: 0.2rem; }
 
+  /* таблица «до и после» — карточки по скважинам */
+  .result-wrap { overflow: visible; }
+  .result-table { min-width: 0; }
+  .result-table thead { display: none; }
+  .result-table, .result-table tbody { display: block; }
+  .result-table tbody tr { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; padding: 0.9rem 0; }
+  .result-table tbody th { grid-column: 1 / -1; padding: 0; }
+  .result-table td { display: flex; flex-direction: column; gap: 0.15rem; text-align: left; padding: 0; }
+  .result-table td::before {
+    content: attr(data-label); font-size: 0.68rem; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted);
+  }
+
   /* --- Hero под телефон: подпись в потоке, без перекрытия --- */
   .hero {
     min-height: 100svh;
@@ -572,11 +604,6 @@ input[type="range"]::-moz-range-thumb {
   .hero__cta { flex-direction: column; align-items: stretch; gap: 0.7rem; }
   .hero__cta .btn { justify-content: center; width: 100%; }
   .hero__readouts { gap: 0.7rem 1.4rem; }
-  .hero__caption {
-    position: static; transform: none; text-align: left;
-    width: auto; max-width: none; padding-inline: 0;
-    margin-top: 2.2rem;
-  }
 
   /* --- Тап-зоны и плотность --- */
   .sol__head { grid-template-columns: auto 1fr auto; gap: 0.8rem; }
@@ -594,6 +621,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @media (max-width: 480px) {
+  .summary__cell { padding: 1rem 0.8rem; }
+  .summary__cell .num { font-size: 1.35rem; }
   .case__stats { gap: 1.4rem; }
   .stat .num { font-size: 1.25rem; }
   .hero__title { word-break: break-word; }
