@@ -512,7 +512,6 @@ input[type="range"]::-moz-range-thumb {
 .footer__links { display: flex; flex-wrap: wrap; gap: 1.2rem; }
 .footer__links a { text-decoration: none; color: var(--muted); font-family: var(--f-mono); font-size: 0.82rem; transition: color .25s var(--ease); }
 .footer__links a:hover { color: var(--paper); }
-.footer__tu { max-width: var(--max); margin: 2rem auto 0; padding-inline: var(--pad); font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); }
 
 /* ---------- Скролл-ревилы ---------- */
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease); }

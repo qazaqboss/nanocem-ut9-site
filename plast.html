@@ -1275,12 +1275,16 @@ function draw() {
   if (document.activeElement !== scrub) scrub.value = String(Math.round((t / T) * 1000));
 }
 
+// анимация идёт быстрее реального сценария: 39 с проходит примерно за 22 с
+const SPEED = 1.8;
 function tick(now) {
-  const dt = last ? Math.min((now - last) / 1000, 1 / 30) : 1 / 60;
+  // время по реальным часам: при низком FPS кадры реже, но скорость та же
+  const dt = (last ? Math.min((now - last) / 1000, 0.25) : 1 / 60) * SPEED;
   last = now;
   if (playing) { t += dt; if (t >= T) t = 0; }
   const target = pressureTarget(t);
-  for (let i = 0; i < 4; i++) { pRate += ((target - pressure) * 120 - pRate * 18) * dt / 4; pressure += pRate * dt / 4; }
+  const n = Math.ceil(dt / 0.01);
+  for (let i = 0; i < n; i++) { pRate += ((target - pressure) * 120 - pRate * 18) * dt / n; pressure += pRate * dt / n; }
   draw();
   frame = visible ? requestAnimationFrame(tick) : 0;
 }
