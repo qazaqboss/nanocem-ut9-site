@@ -234,7 +234,7 @@ p { margin: 0 0 1.1em; }
 /* ---------- В пласте ---------- */
 #reservoir .lead { margin-bottom: 1.2em; }
 .reservoir__text { max-width: 68ch; color: var(--ink); margin-bottom: 2rem; }
-.reservoir__frame { max-width: 960px; }
+.reservoir__frame { max-width: none; }
 .reservoir__frame iframe { display: block; width: 100%; height: 1500px; border: 0; background: transparent; }
 /* на весь экран: iframe поверх страницы (iPhone) или в системном fullscreen */
 .reservoir__frame.is-fs { position: fixed; inset: 0; z-index: 100; max-width: none; background: var(--paper); }
