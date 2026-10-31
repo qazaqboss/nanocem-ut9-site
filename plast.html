@@ -1393,8 +1393,9 @@ function draw() {
   if (document.activeElement !== scrub) scrub.value = String(Math.round((t / T) * 1000));
 }
 
-// анимация идёт быстрее реального сценария: 49 с проходит примерно за 22 с
-const SPEED = 2.2;
+// анимация идёт быстрее реального сценария: 49 с проходит примерно за 22 с;
+// для записи видео скорость задаётся в адресе: ?speed=0.5 — в 2 раза медленнее сценария
+const SPEED = +new URLSearchParams(location.search).get("speed") || 2.2;
 function tick(now) {
   // время по реальным часам: при низком FPS кадры реже, но скорость та же
   const dt = (last ? Math.min((now - last) / 1000, 0.25) : 1 / 60) * SPEED;
